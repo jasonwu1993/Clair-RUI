@@ -4,17 +4,17 @@
     "env": {},
     "webpack": null,
     "eslint": {
-      "ignoreDuringBuilds": false
+      "ignoreDuringBuilds": true
     },
     "typescript": {
-      "ignoreBuildErrors": false,
+      "ignoreBuildErrors": true,
       "tsconfigPath": "tsconfig.json"
     },
     "distDir": ".next",
     "cleanDistDir": true,
     "assetPrefix": "",
     "cacheMaxMemorySize": 52428800,
-    "configOrigin": "default",
+    "configOrigin": "next.config.js",
     "useFileSystemPublicRoutes": true,
     "generateEtags": true,
     "pageExtensions": [
@@ -46,7 +46,7 @@
         256,
         384
       ],
-      "path": "/_next/image",
+      "path": "/_next/image/",
       "loader": "default",
       "loaderFile": "",
       "domains": [],
@@ -59,7 +59,7 @@
       "contentSecurityPolicy": "script-src 'none'; frame-src 'none'; sandbox;",
       "contentDispositionType": "attachment",
       "remotePatterns": [],
-      "unoptimized": false
+      "unoptimized": true
     },
     "devIndicators": {
       "position": "bottom-left"
@@ -73,7 +73,7 @@
     },
     "basePath": "",
     "sassOptions": {},
-    "trailingSlash": false,
+    "trailingSlash": true,
     "i18n": null,
     "productionBrowserSourceMaps": false,
     "excludeDefaultMomentLocales": true,
@@ -89,6 +89,7 @@
     "compiler": {},
     "expireTime": 31536000,
     "staticPageGenerationTimeout": 60,
+    "output": "export",
     "modularizeImports": {
       "@mui/icons-material": {
         "transform": "@mui/icons-material/{{member}}"
@@ -97,7 +98,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/jasonwu/天天/Atherton/BeClair/Engineering/RAG/rag-frontend-vercel",
+    "outputFileTracingRoot": "/Users/jasonwu/天天",
     "experimental": {
       "useSkewCookie": false,
       "nodeMiddleware": false,
@@ -288,11 +289,11 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
     "turbopack": {
-      "root": "/Users/jasonwu/天天/Atherton/BeClair/Engineering/RAG/rag-frontend-vercel"
+      "root": "/Users/jasonwu/天天"
     }
   },
   "appDir": "/Users/jasonwu/天天/Atherton/BeClair/Engineering/RAG/rag-frontend-vercel",
-  "relativeAppDir": "",
+  "relativeAppDir": "Atherton/BeClair/Engineering/RAG/rag-frontend-vercel",
   "files": [
     ".next/routes-manifest.json",
     ".next/server/pages-manifest.json",
@@ -311,6 +312,6 @@
     ".next/required-server-files.json"
   ],
   "ignore": [
-    "node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"
+    "../../../../../node_modules/next/dist/compiled/@ampproject/toolbox-optimizer/**/*"
   ]
 }
