@@ -89,7 +89,7 @@ export const useSync = (state) => {
                 
                 // Continue monitoring if not at max attempts
                 if (attempts < maxAttempts) {
-                    setTimeout(checkSync, 3000);
+                    setTimeout(checkSync, 15000);  // 15 seconds instead of 3 to prevent request storm
                 } else {
                     addProgressLog('WARN', '🔄 Sync monitoring timeout reached', 'Stopped monitoring after 10 minutes');
                     setIsSyncing(false);
@@ -100,7 +100,7 @@ export const useSync = (state) => {
                 console.log(`Monitor check #${attempts} failed:`, error.message);
                 
                 if (attempts < maxAttempts) {
-                    setTimeout(checkSync, 5000); // Longer delay on error
+                    setTimeout(checkSync, 30000); // 30 seconds on error to prevent request storm
                 } else {
                     setIsSyncing(false);
                 }
@@ -108,7 +108,7 @@ export const useSync = (state) => {
         };
         
         // Start monitoring
-        setTimeout(checkSync, 3000);
+        setTimeout(checkSync, 15000);  // Start monitoring after 15 seconds
     }, [setIsSyncing, addProgressLog]);
 
     // Enhanced sync handling with monitoring

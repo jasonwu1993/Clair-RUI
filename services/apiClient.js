@@ -13,12 +13,37 @@ class EnhancedAPIClient {
         // Request rate limiting to prevent backend overload
         this.requestQueue = [];
         this.lastRequestTime = 0;
-        this.minRequestInterval = 1000; // Minimum 1 second between requests
+        this.minRequestInterval = 2000; // Minimum 2 seconds between requests (increased from 1s)
         this.isProcessingQueue = false;
+        
+        // Request deduplication to prevent duplicate concurrent requests
+        this.pendingRequests = new Map(); // Track in-flight requests by endpoint
     }
 
     // Rate-limited request method to prevent backend overload
     async makeRequest(endpoint, options = {}, timeout = 30000, retries = 3) {
+        // Check for duplicate in-flight requests
+        const requestKey = `${options.method || 'GET'}_${endpoint}`;
+        if (this.pendingRequests.has(requestKey)) {
+            console.log(`⚡ Deduplicating request to ${endpoint} - returning existing promise`);
+            return this.pendingRequests.get(requestKey);
+        }
+        
+        // Create the request promise
+        const requestPromise = this._executeRequest(endpoint, options, timeout, retries);
+        
+        // Store in pending requests
+        this.pendingRequests.set(requestKey, requestPromise);
+        
+        // Clean up after completion
+        requestPromise.finally(() => {
+            this.pendingRequests.delete(requestKey);
+        });
+        
+        return requestPromise;
+    }
+    
+    async _executeRequest(endpoint, options = {}, timeout = 30000, retries = 3) {
         // Throttle requests to prevent overwhelming the backend
         const now = Date.now();
         const timeSinceLastRequest = now - this.lastRequestTime;

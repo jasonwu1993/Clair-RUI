@@ -69,7 +69,12 @@ export const useAppEffects = (state, hooks) => {
                         }, 1000); // Start sync after 1 second
                     }
                     
-                    setIsMonitoring(true);
+                    // Delay monitoring to prevent initial request burst
+                    setTimeout(() => {
+                        setIsMonitoring(true);
+                        addProgressLog('INFO', '📊 Monitoring enabled', 'Background status checks activated');
+                    }, 5000); // Wait 5 seconds before starting monitoring
+                    
                     setIsInitialized(true);
                     addProgressLog('SUCCESS', '🎯 App initialization completed', 'Ready to answer questions');
                     
@@ -90,7 +95,7 @@ export const useAppEffects = (state, hooks) => {
 
         const syncStatusInterval = setInterval(() => {
             fetchSyncStatus().catch(e => console.log('Sync status poll failed:', e));
-        }, isSyncing ? 8000 : API_CONFIG.POLLING.SYNC_STATUS);  // 8 seconds during sync (reduced from 2s to prevent overload)
+        }, isSyncing ? 20000 : API_CONFIG.POLLING.SYNC_STATUS);  // 20 seconds during sync (prevent request storm)
 
         const debugInfoInterval = setInterval(() => {
             fetchDebugInfo().catch(e => console.log('Debug info poll failed:', e));
