@@ -1,12 +1,18 @@
 // FilePathTree component - minimal version
 import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
-import { buildFileTreeFromPaths, getFileIcon, countFilesInNode } from '../../utils/fileUtils.js';
+import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
 
 const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
     
+    console.log('🔍 FilePathTree received filePaths:', filePaths);
     const fileTree = buildFileTreeFromPaths(filePaths);
+    console.log('🌳 Built fileTree:', fileTree);
+    
+    // Calculate total counts
+    const totalFiles = countFilesInNode(fileTree);
+    const totalFolders = Object.keys(fileTree.children).length;
 
     useEffect(() => {
         if (Object.keys(fileTree.children).length > 0) {
@@ -81,12 +87,14 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     return (
         <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
             <div className="bg-slate-900 px-3 py-2 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-white">Knowledge Base</h3>
+                <h3 className="text-sm font-semibold text-white">
+                    Knowledge Base ({totalFiles} files, {totalFolders} folders)
+                </h3>
                 <button 
                     onClick={onSelectAll}
                     className="text-xs text-slate-300 hover:text-white"
                 >
-                    Select All
+                    {selectedDocs.length === 0 ? 'Select All' : 'Clear All'}
                 </button>
             </div>
             

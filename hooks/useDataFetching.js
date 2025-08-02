@@ -55,7 +55,7 @@ export const useDataFetching = (state) => {
             
             if (docs && docs.length > 0) {
                 // Extract paths from file objects - use Vertex AI internal paths
-                const docPaths = docs.map(doc => {
+                let docPaths = docs.map(doc => {
                     // Handle both object format (with .path property) and string format
                     if (typeof doc === 'object' && doc.path) {
                         return doc.path;  // Use Vertex AI internal path
@@ -65,7 +65,30 @@ export const useDataFetching = (state) => {
                     return null;
                 }).filter(Boolean);
                 
+                // CRITICAL: Filter out ghost/duplicate files from stale Vertex AI index
+                docPaths = docPaths.filter(path => {
+                    // Only keep files that start with 'documents/' (proper Vertex AI internal paths)
+                    if (!path.startsWith('documents/')) {
+                        console.log('🚫 Filtering out invalid path (no documents/ prefix):', path);
+                        return false;
+                    }
+                    
+                    // Filter out obvious mock/ghost files
+                    if (path.includes('Knowledge Base.md') || path.includes('.md')) {
+                        console.log('🚫 Filtering out mock file:', path);
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Remove duplicates (keep only unique paths)
+                docPaths = [...new Set(docPaths)];
+                console.log(`🧹 Filtered ${docs.length} → ${docPaths.length} files (removed ghosts/duplicates)`);
+                
                 console.log('📍 Using Vertex AI internal paths:', docPaths);
+                console.log('🔍 DEBUG: Raw docs from backend:', docs);
+                console.log('🔍 DEBUG: Extracted docPaths:', docPaths);
                 setAvailableDocs(docPaths);
                 
                 // Auto-select all files (filter path strings that contain dots and don't end with /)

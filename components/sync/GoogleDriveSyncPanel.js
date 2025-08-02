@@ -24,19 +24,22 @@ const GoogleDriveSyncPanel = ({
             const diffMs = nextSync - now;
             
             if (diffMs <= 0) {
-                return 'Soon';
+                return 'Now (overdue)';
             }
             
             const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
             const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
             
             if (diffHours > 0) {
                 return `${diffHours}h ${diffMins}m`;
-            } else {
+            } else if (diffMins > 0) {
                 return `${diffMins}m`;
+            } else {
+                return `${diffSecs}s`;
             }
         }
-        return 'Unknown';
+        return 'Not scheduled';
     };
 
     const getFileCount = () => {
