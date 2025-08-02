@@ -26,7 +26,7 @@ const GoogleDriveSyncPanel = ({
             // If overdue, schedule next sync for 2 hours from now
             if (diffMs <= 0) {
                 const nextScheduled = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from now
-                return `${nextScheduled.toLocaleTimeString()} (next cycle)`;
+                return nextScheduled.toLocaleTimeString();
             }
             
             const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -44,7 +44,7 @@ const GoogleDriveSyncPanel = ({
         
         // Default: Schedule 2 hours from now
         const defaultNext = new Date(Date.now() + (2 * 60 * 60 * 1000));
-        return `${defaultNext.toLocaleTimeString()} (scheduled)`;
+        return defaultNext.toLocaleTimeString();
     };
 
     const getFileCount = () => {
