@@ -14,9 +14,9 @@ export const API_CONFIG = {
         BACKOFF_MULTIPLIER: 1.5 // Gentler backoff
     },
     POLLING: {
-        SYNC_STATUS: 3000,      // 3 seconds
-        DEBUG_INFO: 5000,       // 5 seconds
-        CONNECTION: 30000       // 30 seconds
+        SYNC_STATUS: 10000,     // 10 seconds (reduced from 3s - original was much more conservative)
+        DEBUG_INFO: 15000,      // 15 seconds (reduced from 5s - prevent request overload)
+        CONNECTION: 60000       // 60 seconds (reduced from 30s - less frequent connection tests)
     }
 };
 

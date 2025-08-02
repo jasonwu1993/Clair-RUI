@@ -9,9 +9,28 @@ class EnhancedAPIClient {
         this.errorCount = 0;
         this.successCount = 0;
         this.avgResponseTime = 0;
+        
+        // Request rate limiting to prevent backend overload
+        this.requestQueue = [];
+        this.lastRequestTime = 0;
+        this.minRequestInterval = 1000; // Minimum 1 second between requests
+        this.isProcessingQueue = false;
     }
 
+    // Rate-limited request method to prevent backend overload
     async makeRequest(endpoint, options = {}, timeout = 30000, retries = 3) {
+        // Throttle requests to prevent overwhelming the backend
+        const now = Date.now();
+        const timeSinceLastRequest = now - this.lastRequestTime;
+        
+        if (timeSinceLastRequest < this.minRequestInterval) {
+            const waitTime = this.minRequestInterval - timeSinceLastRequest;
+            console.log(`⏳ Throttling request to ${endpoint} - waiting ${waitTime}ms`);
+            await this.delay(waitTime);
+        }
+        
+        this.lastRequestTime = Date.now();
+        
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
         const requestId = ++this.requestCount;

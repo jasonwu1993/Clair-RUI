@@ -90,7 +90,7 @@ export const useAppEffects = (state, hooks) => {
 
         const syncStatusInterval = setInterval(() => {
             fetchSyncStatus().catch(e => console.log('Sync status poll failed:', e));
-        }, isSyncing ? 2000 : API_CONFIG.POLLING.SYNC_STATUS);
+        }, isSyncing ? 8000 : API_CONFIG.POLLING.SYNC_STATUS);  // 8 seconds during sync (reduced from 2s to prevent overload)
 
         const debugInfoInterval = setInterval(() => {
             fetchDebugInfo().catch(e => console.log('Debug info poll failed:', e));
