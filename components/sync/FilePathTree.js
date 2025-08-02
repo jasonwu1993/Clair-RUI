@@ -13,6 +13,10 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     // Calculate total counts
     const totalFiles = countFilesInNode(fileTree);
     const totalFolders = Object.keys(fileTree.children).length;
+    
+    // Calculate if all files are selected for proper Select All / Clear All display
+    const allFilePaths = getAllFilePathsFromNode(fileTree);
+    const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => selectedDocs.includes(path));
 
     useEffect(() => {
         if (Object.keys(fileTree.children).length > 0) {
@@ -72,7 +76,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="rounded"
+                                    className="w-4 h-4 rounded cursor-pointer"
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="flex-1 text-slate-700 text-xs">{file.name}</span>
@@ -92,9 +96,9 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                 </h3>
                 <button 
                     onClick={onSelectAll}
-                    className="text-xs text-slate-300 hover:text-white"
+                    className="text-xs text-slate-300 hover:text-white hover:bg-slate-700 px-2 py-1 rounded transition-colors"
                 >
-                    {selectedDocs.length === 0 ? 'Select All' : 'Clear All'}
+                    {allSelected ? 'Clear All' : 'Select All'}
                 </button>
             </div>
             
@@ -112,7 +116,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="rounded"
+                                    className="w-4 h-4 rounded cursor-pointer"
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="flex-1 text-slate-700 text-xs">{file.name}</span>

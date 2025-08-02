@@ -80,14 +80,29 @@ export const useDataFetching = (state) => {
                 
                 // CRITICAL: Filter out ghost/duplicate files from stale Vertex AI index
                 const originalCount = docPaths.length;
+                
+                // Define the ONLY valid root-level files (everything else should be in folders)
+                const validRootFiles = [
+                    'AI Strategies Highlights Flyer.pdf',
+                    'PATNAM DYNAMIC LOW VOLATILITY STRATEGIES POWERFUL COMBINATION LIM_1664_324_FINAL.pdf'
+                ];
+                
                 docPaths = docPaths.filter(path => {
-                    // Filter out obvious mock/ghost files
-                    if (path.includes('Knowledge Base.md')) {
+                    // Filter out obvious mock files
+                    if (path.includes('Knowledge Base.md') || path.endsWith('.md')) {
                         console.log('🚫 Filtering out mock file:', path);
                         return false;
                     }
                     
-                    // Keep all actual PDF files (the paths from indexed endpoint don't have documents/ prefix)
+                    // Check if this is a root-level file (no slashes)
+                    if (!path.includes('/')) {
+                        // Only keep the 2 valid root files
+                        if (!validRootFiles.includes(path)) {
+                            console.log('🚫 Filtering out ghost root file:', path);
+                            return false;
+                        }
+                    }
+                    
                     return true;
                 });
                 
