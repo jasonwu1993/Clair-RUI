@@ -54,17 +54,29 @@ export const useDataFetching = (state) => {
             }
             
             if (docs && docs.length > 0) {
-                setAvailableDocs(docs);
+                // Extract paths from file objects - use Vertex AI internal paths
+                const docPaths = docs.map(doc => {
+                    // Handle both object format (with .path property) and string format
+                    if (typeof doc === 'object' && doc.path) {
+                        return doc.path;  // Use Vertex AI internal path
+                    } else if (typeof doc === 'string') {
+                        return doc;
+                    }
+                    return null;
+                }).filter(Boolean);
                 
-                // Auto-select all files
-                const allFiles = docs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+                console.log('📍 Using Vertex AI internal paths:', docPaths);
+                setAvailableDocs(docPaths);
+                
+                // Auto-select all files (filter path strings that contain dots and don't end with /)
+                const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
                 setSelectedDocs(allFiles);
                 
-                addProgressLog('SUCCESS', `Loaded ${docs.length} indexed documents in ${loadTime}ms`, 
-                    `Auto-selected ${allFiles.length} files for search from Vertex AI`);
-                console.log(`✅ Loaded ${docs.length} indexed documents from Vertex AI`);
+                addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
+                    `Auto-selected ${allFiles.length} files for search using Vertex AI internal paths`);
+                console.log(`✅ Loaded ${docPaths.length} documents with Vertex AI internal paths`);
                 
-                return docs;
+                return docPaths;
             } else {
                 addProgressLog('WARN', 'No indexed documents found', 'No documents are currently indexed in Vertex AI');
                 setAvailableDocs([]);

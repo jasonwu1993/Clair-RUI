@@ -15,8 +15,8 @@ export const useSync = (state) => {
     const monitorSyncProgressEnhanced = useCallback(() => {
         let attempts = 0;
         let stuckCount = 0;
-        const maxAttempts = 120; // Monitor for up to 10 minutes
-        const maxStuckCount = 10; // If no progress for 30 seconds, consider stuck
+        const maxAttempts = 20; // Monitor for up to 5 minutes (20 × 15s = 5min) - reduced from 30min!
+        const maxStuckCount = 3; // If no progress for 45 seconds, consider stuck (3 × 15s)
         let lastFilesFound = 0;
         let lastApiCalls = 0;
         let lastOperation = '';
@@ -45,9 +45,17 @@ export const useSync = (state) => {
                 if (status) {
                     if (status.is_syncing === false) {
                         setIsSyncing(false);
-                        addProgressLog('SUCCESS', `✅ Sync completed successfully after ${totalSyncTime}s`, `Final status: ${JSON.stringify(status)}`);
-                        console.log('✅ Sync completed successfully');
-                        return; // Stop monitoring
+                        addProgressLog('SUCCESS', `✅ Sync completed successfully after ${totalSyncTime}s`, 
+                            `STOPPED monitoring loop to prevent request storm. Total attempts: ${attempts}`);
+                        console.log(`✅ Sync completed successfully after ${attempts} attempts - STOPPING request loop`);
+                        
+                        // Refresh document list to show new Vertex AI structure
+                        setTimeout(() => {
+                            addProgressLog('INFO', '🔄 Refreshing document list', 'Loading updated Vertex AI file structure');
+                            window.location.reload();
+                        }, 2000);
+                        
+                        return; // CRITICAL: Stop monitoring immediately to prevent request storm
                     }
                     
                     if (status.current_operation !== lastOperation) {
@@ -80,11 +88,13 @@ export const useSync = (state) => {
                     }
                 }
                 
-                // Check if sync appears stuck (no progress for 30 seconds)
+                // Check if sync appears stuck (no progress for 45 seconds) - FORCE STOP to prevent request storm
                 const timeSinceLastActivity = Date.now() - lastActivity;
-                if (timeSinceLastActivity > 30000) {
-                    addProgressLog('WARN', `⚠️ No sync progress detected for ${Math.floor(timeSinceLastActivity/1000)}s`, 
-                        'Sync may be stuck or processing large files');
+                if (timeSinceLastActivity > 45000) {
+                    addProgressLog('ERROR', `⚠️ SYNC STUCK: No progress for ${Math.floor(timeSinceLastActivity/1000)}s`, 
+                        `FORCE STOPPING sync monitoring to prevent request storm after ${attempts} attempts`);
+                    setIsSyncing(false);
+                    return; // CRITICAL: Force stop to prevent endless requests
                 }
                 
                 // Continue monitoring if not at max attempts
