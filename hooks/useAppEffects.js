@@ -48,17 +48,22 @@ export const useAppEffects = (state, hooks) => {
                         await new Promise(resolve => setTimeout(resolve, 3000));
                     }
                     
-                    // Step 1: Load indexed documents (SEQUENTIAL, not concurrent)
-                    addProgressLog('INFO', '📋 Step 1: Loading indexed documents from Vertex AI', 'Checking what documents are already available for search');
+                    // Step 1: FAST - Load Vertex AI file structure immediately (users want to see files ASAP)
+                    addProgressLog('INFO', '⚡ Step 1: Loading Vertex AI file structure', 'Fetching indexed documents (fast) before checking sync status');
                     const docs = await loadDocuments();
                     
-                    // Step 2: Fetch sync status and debug info SEQUENTIALLY to prevent request storm
-                    addProgressLog('INFO', '📊 Step 2: Fetching system status...', 'Getting sync status and debug information');
+                    // Show file structure immediately - don't wait for sync checks
+                    if (docs && docs.length > 0) {
+                        addProgressLog('SUCCESS', `✅ Loaded ${docs.length} indexed documents`, 'File structure ready - now checking for updates...');
+                    }
+                    
+                    // Step 2: SLOW - Check sync status and optionally sync (background operation)
+                    addProgressLog('INFO', '🔄 Step 2: Checking for Google Drive updates...', 'Background sync status check');
                     await fetchSyncStatus();
                     await new Promise(resolve => setTimeout(resolve, 1000)); // 1s gap between requests
                     await fetchDebugInfo();
                     
-                    // Step 3: Check if we need to sync with Google Drive
+                    // Step 3: Decide if sync is needed (but file structure is already shown)
                     if (docs && docs.length > 0) {
                         addProgressLog('SUCCESS', `✅ Found ${docs.length} indexed documents`, 'Documents ready for search');
                         // Delay background sync more if cold start to prevent request storm
@@ -71,10 +76,10 @@ export const useAppEffects = (state, hooks) => {
                             });
                         }, syncDelay);
                     } else {
-                        addProgressLog('WARN', '⚠️ No indexed documents found', 'Starting initial sync with Google Drive');
+                        addProgressLog('WARN', '⚠️ No documents in Vertex AI index', 'Will sync with Google Drive to populate index');
                         // No documents found, but still wait longer if cold start
                         const initialSyncDelay = isColdStart ? 8000 : 3000; // 8s for cold start, 3s for warm start  
-                        addProgressLog('INFO', '🔄 Scheduling initial sync', `Will start Google Drive sync in ${initialSyncDelay/1000} seconds`);
+                        addProgressLog('INFO', '🔄 Scheduling Google Drive sync', `Will sync and index documents in ${initialSyncDelay/1000} seconds`);
                         setTimeout(() => {
                             handleSyncNow().catch(e => {
                                 console.log('Initial sync failed:', e.message);
@@ -120,13 +125,19 @@ export const useAppEffects = (state, hooks) => {
         const connectionInterval = setInterval(() => {
             testBackendConnection().catch(e => console.log('Connection test failed:', e));
         }, API_CONFIG.POLLING.CONNECTION);
+        
+        // Periodic Vertex AI structure refresh (every 5 minutes) to catch external changes
+        const vertexRefreshInterval = setInterval(() => {
+            loadDocuments().catch(e => console.log('Vertex AI refresh failed:', e));
+        }, 300000); // 5 minutes
 
         return () => {
             clearInterval(syncStatusInterval);
             clearInterval(debugInfoInterval);
             clearInterval(connectionInterval);
+            clearInterval(vertexRefreshInterval);
         };
-    }, [isMonitoring, isInitialized, isSyncing, fetchSyncStatus, fetchDebugInfo, testBackendConnection]);
+    }, [isMonitoring, isInitialized, isSyncing, fetchSyncStatus, fetchDebugInfo, testBackendConnection, loadDocuments]);
 
     // Auto-select documents effect
     useEffect(() => {

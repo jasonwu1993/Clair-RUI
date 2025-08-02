@@ -2,7 +2,7 @@
 import { useCallback } from 'react';
 import apiClient from '../services/apiClient.js';
 
-export const useSync = (state) => {
+export const useSync = (state, hooks = {}) => {
     const { 
         setApiError, 
         setIsSyncing, 
@@ -10,6 +10,9 @@ export const useSync = (state) => {
         addProgressLog,
         GOOGLE_DRIVE_URL 
     } = state;
+    
+    // Extract loadDocuments function for refreshing Vertex AI structure  
+    const { loadDocuments } = hooks;
 
     // Enhanced sync monitoring with stuck sync detection
     const monitorSyncProgressEnhanced = useCallback(() => {
@@ -49,11 +52,27 @@ export const useSync = (state) => {
                             `STOPPED monitoring loop to prevent request storm. Total attempts: ${attempts}`);
                         console.log(`✅ Sync completed successfully after ${attempts} attempts - STOPPING request loop`);
                         
-                        // Refresh document list to show new Vertex AI structure
-                        setTimeout(() => {
-                            addProgressLog('INFO', '🔄 Refreshing document list', 'Loading updated Vertex AI file structure');
-                            window.location.reload();
-                        }, 2000);
+                        // Refresh Vertex AI file structure to show changes (real-time update)
+                        setTimeout(async () => {
+                            addProgressLog('INFO', '🔄 Refreshing Vertex AI structure', 'Checking for updated indexed documents');
+                            try {
+                                if (loadDocuments && typeof loadDocuments === 'function') {
+                                    const updatedDocs = await loadDocuments();
+                                    if (updatedDocs && updatedDocs.length > 0) {
+                                        addProgressLog('SUCCESS', '✅ File structure updated', 
+                                            `Vertex AI index refreshed: ${updatedDocs.length} documents now available`);
+                                        console.log('🔄 Vertex AI structure refreshed after sync completion');
+                                    } else {
+                                        addProgressLog('INFO', 'ℹ️ No structure changes detected', 'Vertex AI index unchanged after sync');
+                                    }
+                                } else {
+                                    addProgressLog('WARN', 'Cannot refresh file structure', 'LoadDocuments function not available');
+                                }
+                            } catch (error) {
+                                addProgressLog('WARN', 'Failed to refresh file structure', 'Manual page refresh may be needed');
+                                console.log('Failed to refresh Vertex AI structure:', error.message);
+                            }
+                        }, 3000); // Wait 3s for indexing to complete
                         
                         return; // CRITICAL: Stop monitoring immediately to prevent request storm
                     }
@@ -119,7 +138,7 @@ export const useSync = (state) => {
         
         // Start monitoring
         setTimeout(checkSync, 15000);  // Start monitoring after 15 seconds
-    }, [setIsSyncing, addProgressLog]);
+    }, [setIsSyncing, addProgressLog, loadDocuments]);
 
     // Enhanced sync handling with monitoring
     const handleSyncNow = useCallback(async () => {

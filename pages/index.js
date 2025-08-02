@@ -26,9 +26,9 @@ export default function EnhancedApp() {
     
     // Initialize hooks with state dependencies
     const connectionHooks = useConnection(state);
-    const syncHooks = useSync(state);
-    const chatHooks = useChat(state);
     const dataFetchingHooks = useDataFetching(state);
+    const syncHooks = useSync(state, { loadDocuments: dataFetchingHooks.loadDocuments });
+    const chatHooks = useChat(state);
     
     // Combine all hooks for useAppEffects
     const allHooks = {
