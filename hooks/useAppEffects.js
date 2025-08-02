@@ -126,10 +126,10 @@ export const useAppEffects = (state, hooks) => {
             testBackendConnection().catch(e => console.log('Connection test failed:', e));
         }, API_CONFIG.POLLING.CONNECTION);
         
-        // Periodic Vertex AI structure refresh (every 5 minutes) to catch external changes
+        // Periodic Vertex AI structure refresh (every 15 minutes) to catch external changes
         const vertexRefreshInterval = setInterval(() => {
             loadDocuments().catch(e => console.log('Vertex AI refresh failed:', e));
-        }, 300000); // 5 minutes
+        }, 900000); // 15 minutes (reduced from 5 to prevent flashing)
 
         return () => {
             clearInterval(syncStatusInterval);

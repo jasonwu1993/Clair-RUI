@@ -10,6 +10,9 @@ export const useDataFetching = (state) => {
         setSelectedDocs,
         addProgressLog
     } = state;
+    
+    // Prevent concurrent loadDocuments calls that cause flashing
+    let isLoadingDocuments = false;
 
     // Fetch sync status
     const fetchSyncStatus = useCallback(async () => {
@@ -37,7 +40,14 @@ export const useDataFetching = (state) => {
 
     // Enhanced document listing with progress tracking - uses Vertex AI indexed documents
     const loadDocuments = useCallback(async () => {
+        // Prevent concurrent calls that cause flashing
+        if (isLoadingDocuments) {
+            console.log('⚠️ LoadDocuments already in progress, skipping concurrent call');
+            return [];
+        }
+        
         try {
+            isLoadingDocuments = true;
             addProgressLog('INFO', 'Loading indexed documents...', 'Fetching Vertex AI indexed files from backend');
             
             const startTime = Date.now();
@@ -65,22 +75,23 @@ export const useDataFetching = (state) => {
                     return null;
                 }).filter(Boolean);
                 
+                // DEBUG: Check what we're actually filtering
+                console.log('🔍 BEFORE filtering - docPaths:', docPaths);
+                
                 // CRITICAL: Filter out ghost/duplicate files from stale Vertex AI index
+                const originalCount = docPaths.length;
                 docPaths = docPaths.filter(path => {
-                    // Only keep files that start with 'documents/' (proper Vertex AI internal paths)
-                    if (!path.startsWith('documents/')) {
-                        console.log('🚫 Filtering out invalid path (no documents/ prefix):', path);
-                        return false;
-                    }
-                    
                     // Filter out obvious mock/ghost files
-                    if (path.includes('Knowledge Base.md') || path.includes('.md')) {
+                    if (path.includes('Knowledge Base.md')) {
                         console.log('🚫 Filtering out mock file:', path);
                         return false;
                     }
                     
+                    // Keep all actual PDF files (the paths from indexed endpoint don't have documents/ prefix)
                     return true;
                 });
+                
+                console.log(`🔍 AFTER filtering - ${originalCount} → ${docPaths.length} files:`, docPaths);
                 
                 // Remove duplicates (keep only unique paths)
                 docPaths = [...new Set(docPaths)];
@@ -123,6 +134,8 @@ export const useDataFetching = (state) => {
             setAvailableDocs([]);
             setSelectedDocs([]);
             return [];
+        } finally {
+            isLoadingDocuments = false;
         }
     }, [setAvailableDocs, setSelectedDocs, addProgressLog]);
 
