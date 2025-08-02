@@ -1,6 +1,6 @@
 // Enhanced Configuration - extracted from original index-original-backup.js
 export const API_CONFIG = {
-    BASE_URL: "https://rag-render.onrender.com",  // Updated to work with our backend
+    BASE_URL: "https://rag-gcs-718538538469.us-central1.run.app",  // Google Cloud Run modular backend
     TIMEOUTS: {
         HEALTH_CHECK: 15000,    // 15 seconds
         SYNC: 300000,           // 5 minutes (matches backend)
