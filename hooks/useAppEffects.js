@@ -139,15 +139,19 @@ export const useAppEffects = (state, hooks) => {
         };
     }, [isMonitoring, isInitialized, isSyncing, fetchSyncStatus, fetchDebugInfo, testBackendConnection, loadDocuments]);
 
-    // Auto-select documents effect
+    // Auto-select documents effect - only on initial load
     useEffect(() => {
-        if (availableDocs.length > 0 && selectedDocs.length === 0) {
+        if (availableDocs.length > 0 && selectedDocs.length === 0 && isInitialized) {
             // Use consistent filter logic matching FilePathTree and handleSelectAll
             const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
-            setSelectedDocs(allFiles);
-            addProgressLog('INFO', `Auto-selected ${allFiles.length} documents`, 'All available documents selected for search');
+            // Only auto-select on very first load, not after manual clearing
+            if (!sessionStorage.getItem('manualSelectionMade')) {
+                setSelectedDocs(allFiles);
+                addProgressLog('INFO', `Auto-selected ${allFiles.length} documents`, 'All available documents selected for search');
+                sessionStorage.setItem('manualSelectionMade', 'true');
+            }
         }
-    }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog]);
+    }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog, isInitialized]);
 
     // Auto-scroll chat effect
     useEffect(() => {

@@ -72,6 +72,9 @@ export const useAppState = () => {
         console.log('Setting newSelection:', newSelection);
         setSelectedDocs(newSelection);
         
+        // Mark that user has manually interacted with selections
+        sessionStorage.setItem('manualSelectionMade', 'true');
+        
         addProgressLog('INFO', newSelection.length === 0 ? 'Deselected all documents' : `Selected ${newSelection.length} documents`, 'Document selection updated');
     }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog]);
 

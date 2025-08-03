@@ -91,9 +91,13 @@ export default function EnhancedApp() {
                 apiClient={apiClient}
                 availableDocs={state.availableDocs} 
                 selectedDocs={state.selectedDocs}
-                onToggleDocSelection={(path) => state.setSelectedDocs(prev => 
-                    prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]
-                )}
+                onToggleDocSelection={(path) => {
+                    state.setSelectedDocs(prev => 
+                        prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]
+                    );
+                    // Mark that user has manually interacted with selections
+                    sessionStorage.setItem('manualSelectionMade', 'true');
+                }}
                 onSelectAll={state.handleSelectAll}
                 syncStatus={state.syncStatus}
                 onSyncNow={syncHooks.handleSyncNow}
