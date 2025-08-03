@@ -128,7 +128,10 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                     Knowledge Base ({totalFiles} files, {totalFolders} folders)
                 </h3>
                 <button 
-                    onClick={onSelectAll}
+                    onClick={() => {
+                        console.log('Clear All clicked, allSelected:', allSelected, 'allFilePaths:', allFilePaths, 'selectedDocs:', selectedDocs);
+                        onSelectAll();
+                    }}
                     className="text-xs text-slate-300 hover:text-white hover:bg-slate-700 px-2 py-1 rounded transition-colors"
                 >
                     {allSelected ? 'Clear All' : 'Select All'}
