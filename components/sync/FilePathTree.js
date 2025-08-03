@@ -92,27 +92,12 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
-                                onClick={(e) => {
-                                    // Only prevent if clicking on the container, not checkbox
-                                    if (e.target.type !== 'checkbox') {
-                                        e.preventDefault();
-                                        console.log('Checkbox click:', file.fullPath, 'initialized:', isInitialized);
-                                        if (isInitialized) {
-                                            onToggleDocSelection(file.fullPath);
-                                        }
-                                    }
-                                }}
+                                onClick={() => onToggleDocSelection(file.fullPath)}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={(e) => {
-                                        e.stopPropagation();
-                                        console.log('Checkbox onChange:', file.fullPath, 'initialized:', isInitialized);
-                                        if (isInitialized) {
-                                            onToggleDocSelection(file.fullPath);
-                                        }
-                                    }}
+                                    onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',
                                         height: '14px',
@@ -122,6 +107,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         border: '1px solid #cbd5e1',
                                         flexShrink: 0
                                     }}
+                                    onClick={(e) => e.stopPropagation()}
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
@@ -178,27 +164,12 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
-                                onClick={(e) => {
-                                    // Only prevent if clicking on the container, not checkbox
-                                    if (e.target.type !== 'checkbox') {
-                                        e.preventDefault();
-                                        console.log('Checkbox click:', file.fullPath, 'initialized:', isInitialized);
-                                        if (isInitialized) {
-                                            onToggleDocSelection(file.fullPath);
-                                        }
-                                    }
-                                }}
+                                onClick={() => onToggleDocSelection(file.fullPath)}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={(e) => {
-                                        e.stopPropagation();
-                                        console.log('Checkbox onChange:', file.fullPath, 'initialized:', isInitialized);
-                                        if (isInitialized) {
-                                            onToggleDocSelection(file.fullPath);
-                                        }
-                                    }}
+                                    onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',
                                         height: '14px',
@@ -208,6 +179,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         border: '1px solid #cbd5e1',
                                         flexShrink: 0
                                     }}
+                                    onClick={(e) => e.stopPropagation()}
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
