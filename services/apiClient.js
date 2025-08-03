@@ -166,11 +166,11 @@ class EnhancedAPIClient {
     }
 
     async listFiles() {
-        return this.makeRequest('/documents/list_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
+        return this.makeRequest('/documents/list', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
     }
 
     async listIndexedFiles() {
-        return this.makeRequest('/documents/list_indexed_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
+        return this.makeRequest('/documents/indexed', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
     }
 
     async askQuestion(query, filters = []) {
