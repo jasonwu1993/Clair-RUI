@@ -78,9 +78,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0"
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{ accentColor: '#2563eb' }}
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
@@ -126,9 +125,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0"
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{ accentColor: '#2563eb' }}
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
