@@ -1,4 +1,4 @@
-// FilePathTree component - fixed version
+// FilePathTree component - working without Tailwind Forms plugin
 import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
 import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
@@ -42,26 +42,22 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
         return (
             <div key={folder.path}>
                 <div 
-                    className="flex items-center gap-2 px-2 py-1 rounded hover:bg-slate-100 text-sm"
+                    className="flex items-center gap-2 px-2 py-1 rounded cursor-pointer hover:bg-slate-100 text-sm"
                     style={{ paddingLeft: `${depth * 16 + 8}px` }}
+                    onClick={() => toggleFolder(folder.path)}
                 >
-                    <div 
-                        className="flex items-center gap-2 flex-1 cursor-pointer"
-                        onClick={() => toggleFolder(folder.path)}
-                    >
-                        {isExpanded ? (
-                            <ChevronDown size={14} className="text-slate-500" />
-                        ) : (
-                            <ChevronRight size={14} className="text-slate-500" />
-                        )}
-                        {isExpanded ? (
-                            <FolderOpen size={16} className="text-yellow-600" />
-                        ) : (
-                            <Folder size={16} className="text-yellow-600" />
-                        )}
-                        <span className="flex-1 text-slate-700">{folder.name}</span>
-                        <span className="text-xs text-slate-500">({fileCount})</span>
-                    </div>
+                    {isExpanded ? (
+                        <ChevronDown size={14} className="text-slate-500" />
+                    ) : (
+                        <ChevronRight size={14} className="text-slate-500" />
+                    )}
+                    {isExpanded ? (
+                        <FolderOpen size={16} className="text-yellow-600" />
+                    ) : (
+                        <Folder size={16} className="text-yellow-600" />
+                    )}
+                    <span className="flex-1 text-slate-700">{folder.name}</span>
+                    <span className="text-xs text-slate-500">({fileCount})</span>
                 </div>
                 
                 {isExpanded && (
@@ -70,28 +66,26 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {folder.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-2 py-1.5 px-2 rounded group transition-all duration-150 ${
+                                className={`flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150 ${
                                     selectedDocs.includes(file.fullPath) 
                                         ? 'bg-blue-50 border border-blue-200' 
                                         : 'hover:bg-slate-50'
                                 }`}
                                 style={{ paddingLeft: `${(depth + 1) * 16 + 24}px` }}
+                                onClick={() => onToggleDocSelection(file.fullPath)}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+                                    className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{ accentColor: '#2563eb' }}
                                 />
-                                <div 
-                                    className="flex items-center gap-2 flex-1 cursor-pointer"
-                                    onClick={() => onToggleDocSelection(file.fullPath)}
-                                >
-                                    {getFileIcon(file.extension)}
-                                    <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
-                                        {file.name}
-                                    </span>
-                                </div>
+                                {getFileIcon(file.extension)}
+                                <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
+                                    {file.name}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -109,7 +103,6 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                 <button 
                     onClick={onSelectAll}
                     className="text-xs text-slate-300 hover:text-white hover:bg-slate-700 px-2 py-1 rounded transition-colors"
-                    disabled={allFilePaths.length === 0}
                 >
                     {allSelected ? 'Clear All' : 'Select All'}
                 </button>
@@ -122,27 +115,25 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {fileTree.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-2 py-1.5 px-2 rounded group transition-all duration-150 ${
+                                className={`flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150 ${
                                     selectedDocs.includes(file.fullPath) 
                                         ? 'bg-blue-50 border border-blue-200' 
                                         : 'hover:bg-slate-50'
                                 }`}
+                                onClick={() => onToggleDocSelection(file.fullPath)}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+                                    className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{ accentColor: '#2563eb' }}
                                 />
-                                <div 
-                                    className="flex items-center gap-2 flex-1 cursor-pointer"
-                                    onClick={() => onToggleDocSelection(file.fullPath)}
-                                >
-                                    {getFileIcon(file.extension)}
-                                    <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
-                                        {file.name}
-                                    </span>
-                                </div>
+                                {getFileIcon(file.extension)}
+                                <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
+                                    {file.name}
+                                </span>
                             </div>
                         ))}
                     </div>

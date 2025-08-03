@@ -59,17 +59,10 @@ export const useAppState = () => {
     // Handle select all / clear all functionality
     const handleSelectAll = useCallback(() => {
         const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
-        const allSelected = selectedDocs.length === allFiles.length && allFiles.length > 0;
+        const newSelection = selectedDocs.length === allFiles.length ? [] : allFiles;
+        setSelectedDocs(newSelection);
         
-        if (allSelected) {
-            // Clear all selections
-            setSelectedDocs([]);
-            addProgressLog('INFO', 'Deselected all documents', 'Document selection cleared');
-        } else {
-            // Select all files
-            setSelectedDocs(allFiles);
-            addProgressLog('INFO', `Selected ${allFiles.length} documents`, 'All available documents selected');
-        }
+        addProgressLog('INFO', newSelection.length === 0 ? 'Deselected all documents' : `Selected ${newSelection.length} documents`, 'Document selection updated');
     }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog]);
 
     return {
