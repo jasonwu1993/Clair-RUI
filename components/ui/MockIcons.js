@@ -44,4 +44,4 @@ export const MinusSquare = (props) => <MockIcon {...props}>⊟</MockIcon>;
 // Enhanced folder selection icons
 export const FolderNone = (props) => <MockIcon {...props}>📁</MockIcon>;
 export const FolderSelected = (props) => <MockIcon {...props}>✅</MockIcon>;
-export const FolderPartial = (props) => <MockIcon {...props}>➖</MockIcon>;
+export const FolderPartial = (props) => <MockIcon {...props}>🔸</MockIcon>;

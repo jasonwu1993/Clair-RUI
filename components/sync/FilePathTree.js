@@ -131,74 +131,104 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
         
         return (
             <div key={folder.path}>
+                {/* Folder row */}
                 <div 
-                    className="flex items-center gap-2 px-2 py-1 rounded cursor-pointer hover:bg-slate-100 text-sm"
-                    style={{ paddingLeft: `${depth * 16 + 8}px` }}
+                    className="flex items-center gap-1 px-2 py-1.5 rounded cursor-pointer hover:bg-slate-50 text-sm group relative"
                     onClick={() => toggleFolder(folder.path)}
                 >
-                    {isExpanded ? (
-                        <ChevronDown size={14} className="text-slate-500" />
-                    ) : (
-                        <ChevronRight size={14} className="text-slate-500" />
+                    {/* Vertical lines for structure */}
+                    {depth > 0 && (
+                        <div className="absolute left-0 top-0 bottom-0 flex">
+                            {Array.from({ length: depth }, (_, i) => (
+                                <div 
+                                    key={i}
+                                    className="w-4 border-l border-slate-200"
+                                    style={{ marginLeft: `${i * 16}px` }}
+                                />
+                            ))}
+                        </div>
                     )}
-                    {renderFolderSelectionIndicator(folder)}
-                    {isExpanded ? (
-                        <FolderOpen size={16} className="text-yellow-600" />
-                    ) : (
-                        <Folder size={16} className="text-yellow-600" />
-                    )}
-                    <span className="flex-1 text-slate-700">{folder.name}</span>
-                    <span className="text-xs text-slate-500">({fileCount})</span>
+                    
+                    {/* Indentation */}
+                    <div style={{ width: `${depth * 16}px` }} />
+                    
+                    {/* Expand/collapse arrow */}
+                    <div className="flex items-center justify-center w-4 h-4">
+                        {isExpanded ? (
+                            <ChevronDown size={12} className="text-slate-600" />
+                        ) : (
+                            <ChevronRight size={12} className="text-slate-600" />
+                        )}
+                    </div>
+                    
+                    {/* Selection indicator */}
+                    <div className="flex items-center justify-center">
+                        {renderFolderSelectionIndicator(folder)}
+                    </div>
+                    
+                    {/* Folder name (no redundant folder icon) */}
+                    <span className="flex-1 text-slate-700 font-medium ml-2">{folder.name}</span>
+                    
+                    {/* File count */}
+                    <span className="text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-full group-hover:bg-slate-200 transition-colors">
+                        {fileCount}
+                    </span>
                 </div>
                 
+                {/* Children */}
                 {isExpanded && (
-                    <div>
+                    <div className="relative">
                         {Object.values(folder.children).map(child => renderFolder(child, depth + 1))}
                         {folder.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
-                                style={{
-                                    backgroundColor: safeIsFileSelected(file.fullPath) ? '#eff6ff' : 'transparent',
-                                    border: safeIsFileSelected(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '6px 8px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s',
-                                    paddingLeft: `${(depth + 1) * 16 + 24}px`
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!safeIsFileSelected(file.fullPath)) {
-                                        e.target.style.backgroundColor = '#f8fafc';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!safeIsFileSelected(file.fullPath)) {
-                                        e.target.style.backgroundColor = 'transparent';
-                                    }
-                                }}
+                                className={`flex items-center gap-1 py-1.5 px-2 rounded cursor-pointer transition-all duration-150 group relative ${
+                                    safeIsFileSelected(file.fullPath) 
+                                        ? 'bg-blue-50 border border-blue-200' 
+                                        : 'hover:bg-slate-50 border border-transparent'
+                                }`}
                                 onClick={() => onToggleDocSelection(file.fullPath)}
                             >
+                                {/* Vertical lines for structure */}
+                                {depth >= 0 && (
+                                    <div className="absolute left-0 top-0 bottom-0 flex">
+                                        {Array.from({ length: depth + 1 }, (_, i) => (
+                                            <div 
+                                                key={i}
+                                                className="w-4 border-l border-slate-200"
+                                                style={{ marginLeft: `${i * 16}px` }}
+                                            />
+                                        ))}
+                                        {/* File connector line */}
+                                        <div 
+                                            className="absolute top-1/2 w-3 border-t border-slate-200"
+                                            style={{ left: `${(depth + 1) * 16}px` }}
+                                        />
+                                    </div>
+                                )}
+                                
+                                {/* Indentation */}
+                                <div style={{ width: `${(depth + 1) * 16}px` }} />
+                                
+                                {/* Spacer for arrow alignment */}
+                                <div className="w-4" />
+                                
+                                {/* Checkbox */}
                                 <input
                                     type="checkbox"
                                     checked={safeIsFileSelected(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    style={{
-                                        width: '14px',
-                                        height: '14px',
-                                        accentColor: '#2563eb',
-                                        cursor: 'pointer',
-                                        borderRadius: '3px',
-                                        border: '1px solid #cbd5e1',
-                                        flexShrink: 0
-                                    }}
+                                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 focus:ring-2 flex-shrink-0"
                                     onClick={(e) => e.stopPropagation()}
                                 />
-                                {getFileIcon(file.extension)}
-                                <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
+                                
+                                {/* File icon */}
+                                <div className="flex items-center justify-center w-4">
+                                    {getFileIcon(file.extension)}
+                                </div>
+                                
+                                {/* File name */}
+                                <span className="text-sm text-slate-800 truncate flex-1 ml-2" title={file.name}>
                                     {file.name}
                                 </span>
                             </div>
@@ -238,47 +268,34 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {fileTree.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
-                                style={{
-                                    backgroundColor: safeIsFileSelected(file.fullPath) ? '#eff6ff' : 'transparent',
-                                    border: safeIsFileSelected(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '6px 8px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (!safeIsFileSelected(file.fullPath)) {
-                                        e.target.style.backgroundColor = '#f8fafc';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!safeIsFileSelected(file.fullPath)) {
-                                        e.target.style.backgroundColor = 'transparent';
-                                    }
-                                }}
+                                className={`flex items-center gap-1 py-1.5 px-2 rounded cursor-pointer transition-all duration-150 ${
+                                    safeIsFileSelected(file.fullPath) 
+                                        ? 'bg-blue-50 border border-blue-200' 
+                                        : 'hover:bg-slate-50 border border-transparent'
+                                }`}
                                 onClick={() => onToggleDocSelection(file.fullPath)}
                             >
+                                {/* No indentation for root files */}
+                                
+                                {/* Spacer for arrow alignment */}
+                                <div className="w-4" />
+                                
+                                {/* Checkbox */}
                                 <input
                                     type="checkbox"
                                     checked={safeIsFileSelected(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
-                                    style={{
-                                        width: '14px',
-                                        height: '14px',
-                                        accentColor: '#2563eb',
-                                        cursor: 'pointer',
-                                        borderRadius: '3px',
-                                        border: '1px solid #cbd5e1',
-                                        flexShrink: 0
-                                    }}
+                                    className="w-3.5 h-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 focus:ring-2 flex-shrink-0"
                                     onClick={(e) => e.stopPropagation()}
                                 />
-                                {getFileIcon(file.extension)}
-                                <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
+                                
+                                {/* File icon */}
+                                <div className="flex items-center justify-center w-4">
+                                    {getFileIcon(file.extension)}
+                                </div>
+                                
+                                {/* File name */}
+                                <span className="text-sm text-slate-800 truncate flex-1 ml-2" title={file.name}>
                                     {file.name}
                                 </span>
                             </div>
