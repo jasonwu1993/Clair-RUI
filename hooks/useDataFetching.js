@@ -84,28 +84,29 @@ export const useDataFetching = (state) => {
                 console.log('🔍 DEBUG: Extracted docPaths:', docPaths);
                 setAvailableDocs(docPaths);
                 
-                // Auto-select all files ONLY on first app initialization (not after sync)
+                // Auto-select all files during initialization phase
                 const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
-                const hasInitialized = sessionStorage.getItem('appInitialized');
+                const hasAutoSelected = sessionStorage.getItem('hasAutoSelectedOnInit');
                 const hasManualSelection = sessionStorage.getItem('manualSelectionMade');
                 
-                if (!hasInitialized) {
-                    // First time initialization - always select all
+                if (!hasAutoSelected) {
+                    // First time initialization - always select all files
                     setSelectedDocs(allFiles);
-                    sessionStorage.setItem('appInitialized', 'true');
-                    console.log('🎯 First-time initialization: auto-selecting all files:', allFiles.length);
+                    sessionStorage.setItem('hasAutoSelectedOnInit', 'true');
+                    console.log('🎯 Default "Select All" during initialization:', allFiles.length, 'files selected');
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
-                        `Auto-selected all ${allFiles.length} files for search (first-time initialization)`);
+                        `Default "Select All" applied - ${allFiles.length} files selected for search`);
                 } else if (!hasManualSelection) {
-                    // Subsequent loads but no manual selection yet - still auto-select
+                    // App restarted but user hasn't made manual selections - maintain auto-select behavior
                     setSelectedDocs(allFiles);
-                    console.log('🎯 Auto-selecting all files (no manual selection yet):', allFiles.length);
+                    console.log('🎯 Maintaining "Select All" behavior (no manual changes yet):', allFiles.length);
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
-                        `Auto-selected ${allFiles.length} files for search using Vertex AI internal paths`);
+                        `Maintained "Select All" - ${allFiles.length} files selected for search`);
                 } else {
-                    console.log('👤 Skipping auto-selection - user has made manual selections');
+                    // User has made manual selections - respect their preferences
+                    console.log('👤 Preserving user selection preferences');
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
-                        `Maintaining existing file selection preferences`);
+                        `Preserved existing file selection preferences`);
                 }
                 console.log(`✅ Loaded ${docPaths.length} documents with Vertex AI internal paths`);
                 
@@ -152,8 +153,8 @@ export const useDataFetching = (state) => {
             setAvailableDocs([]);
             setSelectedDocs([]);
             
-            // Clear session storage to trigger fresh initialization
-            sessionStorage.removeItem('appInitialized');
+            // Clear session storage to trigger fresh initialization with "Select All"
+            sessionStorage.removeItem('hasAutoSelectedOnInit');
             sessionStorage.removeItem('manualSelectionMade');
             
             addProgressLog('SUCCESS', 'Emergency reset completed', 'App state cleared - reloading from Vertex AI');
