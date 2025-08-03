@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
 import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
 
-const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll }) => {
+const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
     const [isInitialized, setIsInitialized] = useState(true); // Start as initialized to debug
     
@@ -15,7 +15,9 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     
     // Calculate if all files are selected for proper Select All / Clear All display
     const allFilePaths = filePaths.filter(path => path && path.includes('.') && !path.endsWith('/'));
-    const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => selectedDocs.includes(path));
+    const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => 
+        isFileSelected ? isFileSelected(path) : selectedDocs.includes(path)
+    );
 
     useEffect(() => {
         if (Object.keys(fileTree.children).length > 0) {
@@ -71,8 +73,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                 key={file.fullPath}
                                 className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
                                 style={{
-                                    backgroundColor: selectedDocs.includes(file.fullPath) ? '#eff6ff' : 'transparent',
-                                    border: selectedDocs.includes(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    backgroundColor: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '#eff6ff' : 'transparent',
+                                    border: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '1px solid #bfdbfe' : '1px solid transparent',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
@@ -83,12 +85,14 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     paddingLeft: `${(depth + 1) * 16 + 24}px`
                                 }}
                                 onMouseEnter={(e) => {
-                                    if (!selectedDocs.includes(file.fullPath)) {
+                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
+                                    if (!isSelected) {
                                         e.target.style.backgroundColor = '#f8fafc';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    if (!selectedDocs.includes(file.fullPath)) {
+                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
+                                    if (!isSelected) {
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
@@ -96,7 +100,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                             >
                                 <input
                                     type="checkbox"
-                                    checked={selectedDocs.includes(file.fullPath)}
+                                    checked={isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',
@@ -147,8 +151,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                 key={file.fullPath}
                                 className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
                                 style={{
-                                    backgroundColor: selectedDocs.includes(file.fullPath) ? '#eff6ff' : 'transparent',
-                                    border: selectedDocs.includes(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    backgroundColor: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '#eff6ff' : 'transparent',
+                                    border: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '1px solid #bfdbfe' : '1px solid transparent',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
@@ -158,12 +162,14 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     transition: 'all 0.15s'
                                 }}
                                 onMouseEnter={(e) => {
-                                    if (!selectedDocs.includes(file.fullPath)) {
+                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
+                                    if (!isSelected) {
                                         e.target.style.backgroundColor = '#f8fafc';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    if (!selectedDocs.includes(file.fullPath)) {
+                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
+                                    if (!isSelected) {
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
@@ -171,7 +177,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                             >
                                 <input
                                     type="checkbox"
-                                    checked={selectedDocs.includes(file.fullPath)}
+                                    checked={isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',

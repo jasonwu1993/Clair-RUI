@@ -3,6 +3,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatTimestampWithTZ, getTimezone } from '../utils/formatters.js';
 import { FRONTEND_VERSION, FRONTEND_BUILD_DATE } from '../utils/constants.js';
 import apiClient from '../services/apiClient.js';
+import { 
+    createSelectionState, 
+    selectAllFiles, 
+    clearAllSelections, 
+    toggleFileSelection,
+    areAllFilesSelected,
+    getSelectedFiles,
+    isFileSelected 
+} from '../utils/selectionUtils.js';
 
 export const useAppState = () => {
     // Core state management with safe defaults
@@ -16,7 +25,7 @@ export const useAppState = () => {
     const [inputQuery, setInputQuery] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [availableDocs, setAvailableDocs] = useState([]);
-    const [selectedDocs, setSelectedDocs] = useState([]);
+    const [selectionState, setSelectionState] = useState(createSelectionState());
     const [apiError, setApiError] = useState('');
     const [syncStatus, setSyncStatus] = useState(null);
     const [isSyncing, setIsSyncing] = useState(false);
@@ -56,27 +65,68 @@ export const useAppState = () => {
         addProgressLog('INFO', 'Progress logs cleared');
     }, [addProgressLog]);
 
-    // Handle select all / clear all functionality
+    // Handle select all / clear all functionality - EFFICIENT for large file sets
     const handleSelectAll = useCallback(() => {
         const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
-        console.log('handleSelectAll called:', {
-            availableDocs: availableDocs.length,
-            allFiles: allFiles.length,
-            selectedDocs: selectedDocs.length,
-            allFilesEqual: selectedDocs.length === allFiles.length,
-            allFiles,
-            selectedDocs
+        const isAllSelected = areAllFilesSelected(selectionState, allFiles);
+        
+        const newSelectionState = isAllSelected 
+            ? clearAllSelections() 
+            : selectAllFiles(allFiles);
+            
+        console.log('Efficient selection toggle:', {
+            allFilesCount: allFiles.length,
+            wasAllSelected: isAllSelected,
+            newState: newSelectionState
         });
-        const allSelected = allFiles.length > 0 && allFiles.every(file => selectedDocs.includes(file));
-        const newSelection = allSelected ? [] : allFiles;
-        console.log('Setting newSelection:', newSelection);
-        setSelectedDocs(newSelection);
+        
+        setSelectionState(newSelectionState);
         
         // Mark that user has manually interacted with selections
         sessionStorage.setItem('manualSelectionMade', 'true');
         
-        addProgressLog('INFO', newSelection.length === 0 ? 'Deselected all documents' : `Selected ${newSelection.length} documents`, 'Document selection updated');
-    }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog]);
+        addProgressLog('INFO', 
+            newSelectionState.count === 0 
+                ? 'Deselected all documents' 
+                : `Selected ${newSelectionState.count} documents`, 
+            'Document selection updated efficiently'
+        );
+    }, [availableDocs, selectionState, addProgressLog]);
+
+    // Helper to get individual file selection toggle handler
+    const handleToggleDocSelection = useCallback((filePath) => {
+        const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+        const newSelectionState = toggleFileSelection(filePath, selectionState, allFiles);
+        
+        console.log('Toggle file selection:', {
+            file: filePath,
+            oldState: selectionState,
+            newState: newSelectionState
+        });
+        
+        setSelectionState(newSelectionState);
+        sessionStorage.setItem('manualSelectionMade', 'true');
+    }, [availableDocs, selectionState]);
+
+    // Backward compatibility: get actual selected docs array when needed
+    const selectedDocs = getSelectedFiles(selectionState, availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/')));
+
+    // Backward compatibility helper for setSelectedDocs (converts array back to selectionState)
+    const setSelectedDocs = useCallback((newSelectedArray) => {
+        const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+        if (Array.isArray(newSelectedArray)) {
+            const newSelectionState = createSelectionState();
+            newSelectedArray.forEach(filePath => {
+                if (allFiles.includes(filePath)) {
+                    newSelectionState.specificFiles.add(filePath);
+                    newSelectionState.count++;
+                }
+            });
+            newSelectionState.mode = newSelectedArray.length === 0 ? 'none' : 
+                                     newSelectedArray.length === allFiles.length ? 'all' : 'specific';
+            setSelectionState(newSelectionState);
+        }
+    }, [availableDocs]);
 
     return {
         // State
@@ -120,6 +170,11 @@ export const useAppState = () => {
         // Methods
         addProgressLog,
         clearProgressLogs,
-        handleSelectAll
+        handleSelectAll,
+        handleToggleDocSelection,
+        
+        // Selection utilities for advanced use cases
+        selectionState,
+        isFileSelected: (filePath) => isFileSelected(filePath, selectionState)
     };
 };

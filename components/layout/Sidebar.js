@@ -13,7 +13,8 @@ const Sidebar = ({
     apiClient,
     availableDocs, 
     selectedDocs, 
-    onToggleDocSelection, 
+    onToggleDocSelection,
+    isFileSelected,
     onSelectAll,
     syncStatus,
     onSyncNow,
@@ -104,6 +105,7 @@ const Sidebar = ({
                     filePaths={availableDocs}
                     selectedDocs={selectedDocs}
                     onToggleDocSelection={onToggleDocSelection}
+                    isFileSelected={isFileSelected}
                     onSelectAll={onSelectAll}
                 />
             </div>
