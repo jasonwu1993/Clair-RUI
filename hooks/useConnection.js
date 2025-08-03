@@ -21,9 +21,23 @@ export const useConnection = (state) => {
             const healthData = await apiClient.healthCheck();
             const responseTime = Date.now() - startTime;
             
-            // Extract backend version
+            // Extract backend version - try health endpoint first, then root endpoint as fallback
+            let backendVersion = 'unknown';
             if (healthData && healthData.version) {
-                setBackendVersion(healthData.version);
+                backendVersion = healthData.version;
+                setBackendVersion(backendVersion);
+            } else {
+                // Fallback: get version from root endpoint
+                try {
+                    const rootData = await apiClient.getVersion();
+                    if (rootData && rootData.version) {
+                        backendVersion = rootData.version;
+                        setBackendVersion(backendVersion);
+                        console.log('📝 Got version from root endpoint as fallback:', backendVersion);
+                    }
+                } catch (versionError) {
+                    console.warn('⚠️ Could not get version from either endpoint:', versionError);
+                }
             }
             
             if (healthData && healthData.status === 'healthy') {
@@ -36,8 +50,8 @@ export const useConnection = (state) => {
                 if (responseTime >= 5000) quality = 'poor';
                 setConnectionQuality(quality);
                 
-                addProgressLog('SUCCESS', `Backend connection successful (${responseTime}ms)`, `Quality: ${quality}, Version: ${healthData.version || 'unknown'}`);
-                console.log(`✅ Backend connection successful (${responseTime}ms)`);
+                addProgressLog('SUCCESS', `Backend connection successful (${responseTime}ms)`, `Quality: ${quality}, Version: ${backendVersion}`);
+                console.log(`✅ Backend connection successful (${responseTime}ms) - Version: ${backendVersion}`);
             } else {
                 setBackendStatus('degraded');
                 setConnectionQuality('poor');

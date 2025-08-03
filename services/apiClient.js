@@ -161,6 +161,10 @@ class EnhancedAPIClient {
         return this.makeRequest('/health', {}, API_CONFIG.TIMEOUTS.HEALTH_CHECK, 2);
     }
 
+    async getVersion() {
+        return this.makeRequest('/', {}, API_CONFIG.TIMEOUTS.HEALTH_CHECK, 2);
+    }
+
     async syncDrive() {
         return this.makeRequest('/documents/sync_drive', { method: 'POST' }, API_CONFIG.TIMEOUTS.SYNC, 2);  // Updated for modular backend
     }
