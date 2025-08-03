@@ -31,9 +31,9 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
         if (!lastUpdate) return '❓ No data';
         const secondsAgo = Math.floor((Date.now() - lastUpdate) / 1000);
         if (secondsAgo < 3) return '🟢 Live';
-        if (secondsAgo < 10) return '🟡 Recent';
+        if (secondsAgo < 10) return '🟡 Recent'; 
         if (secondsAgo < 30) return '🟠 Stale';
-        return '🔴 Old';
+        return '🔴 Old (>30s)';
     };
 
     return (
@@ -73,8 +73,10 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                 {showDetails && debugInfo && (
                     <div className="mt-3 space-y-2">
                         <div className="flex items-center justify-between text-xs">
-                            <span className="text-slate-600">Files Found:</span>
-                            <span className="font-mono">{debugInfo.sync_progress?.files_found || 0}</span>
+                            <span className="text-slate-600" title="Files discovered during sync operation">Files Found:</span>
+                            <span className="font-mono" title={(debugInfo.sync_progress?.files_found || 0) === 0 ? "No files found during sync - check Google Drive folder permissions" : `${debugInfo.sync_progress?.files_found || 0} files discovered during sync operation`}>
+                                {debugInfo.sync_progress?.files_found || 0}
+                            </span>
                         </div>
                         <div className="flex items-center justify-between text-xs">
                             <span className="text-slate-600">API Calls:</span>
@@ -86,26 +88,29 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                                 {debugInfo.sync_progress?.current_operation || 'monitoring'}
                             </span>
                         </div>
+                        
+                        {/* Admin Actions - moved here under collapsed section */}
+                        <div className="pt-2 border-t border-slate-200 space-y-2">
+                            <div className="text-xs text-slate-600 font-medium mb-2">Admin Actions</div>
+                            <button 
+                                onClick={onCleanupVertexAI}
+                                className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
+                                title="SAFE: Only removes 7 specific ghost files, keeps all good documents"
+                            >
+                                <Activity size={12} />
+                                Remove Ghost Files Only
+                            </button>
+                            <button 
+                                onClick={onEmergencyReset}
+                                className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                                title="Emergency Reset: Clears all cached data and forces full system refresh. This will reset file selections and reload everything from scratch."
+                            >
+                                <Trash2 size={12} />
+                                Emergency Reset
+                            </button>
+                        </div>
                     </div>
                 )}
-
-                <div className="pt-2 border-t border-slate-200 space-y-2">
-                    <button 
-                        onClick={onCleanupVertexAI}
-                        className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
-                        title="SAFE: Only removes 7 specific ghost files, keeps all good documents"
-                    >
-                        <Activity size={12} />
-                        Remove Ghost Files Only
-                    </button>
-                    <button 
-                        onClick={onEmergencyReset}
-                        className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-                    >
-                        <Trash2 size={12} />
-                        Emergency Reset
-                    </button>
-                </div>
             </div>
         </div>
     );

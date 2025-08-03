@@ -84,12 +84,22 @@ export const useDataFetching = (state) => {
                 console.log('🔍 DEBUG: Extracted docPaths:', docPaths);
                 setAvailableDocs(docPaths);
                 
-                // Auto-select all files ONLY on first initialization (not after sync)
+                // Auto-select all files ONLY on first app initialization (not after sync)
                 const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
+                const hasInitialized = sessionStorage.getItem('appInitialized');
                 const hasManualSelection = sessionStorage.getItem('manualSelectionMade');
-                if (!hasManualSelection) {
+                
+                if (!hasInitialized) {
+                    // First time initialization - always select all
                     setSelectedDocs(allFiles);
-                    console.log('🎯 Initial auto-selection of all files:', allFiles.length);
+                    sessionStorage.setItem('appInitialized', 'true');
+                    console.log('🎯 First-time initialization: auto-selecting all files:', allFiles.length);
+                    addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
+                        `Auto-selected all ${allFiles.length} files for search (first-time initialization)`);
+                } else if (!hasManualSelection) {
+                    // Subsequent loads but no manual selection yet - still auto-select
+                    setSelectedDocs(allFiles);
+                    console.log('🎯 Auto-selecting all files (no manual selection yet):', allFiles.length);
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
                         `Auto-selected ${allFiles.length} files for search using Vertex AI internal paths`);
                 } else {

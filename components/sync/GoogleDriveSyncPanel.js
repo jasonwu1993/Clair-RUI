@@ -59,7 +59,7 @@ const GoogleDriveSyncPanel = ({
             <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                     <CloudDownload size={16} />
-                    Google Drive Sync
+                    KB File Sync
                 </h3>
                 {isMonitoring && (
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -74,8 +74,10 @@ const GoogleDriveSyncPanel = ({
                     </span>
                 </div>
                 <div className="flex justify-between">
-                    <span className="text-slate-600">Files Found:</span>
-                    <span className="font-mono">{getFileCount()}</span>
+                    <span className="text-slate-600" title="Number of files discovered during Google Drive sync scan">Files Found:</span>
+                    <span className="font-mono" title={getFileCount() === 0 ? "No files found - try running 'Sync Now' to scan Google Drive folder" : `${getFileCount()} files discovered in Google Drive folder`}>
+                        {getFileCount()}
+                    </span>
                 </div>
                 <div className="flex justify-between">
                     <span className="text-slate-600">Last Sync:</span>
