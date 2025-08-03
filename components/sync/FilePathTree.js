@@ -5,7 +5,7 @@ import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsF
 
 const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
-    const [isInitialized, setIsInitialized] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(true); // Start as initialized to debug
     
     const fileTree = buildFileTreeFromPaths(filePaths);
     
@@ -93,16 +93,26 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     }
                                 }}
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    if (isInitialized) {
-                                        onToggleDocSelection(file.fullPath);
+                                    // Only prevent if clicking on the container, not checkbox
+                                    if (e.target.type !== 'checkbox') {
+                                        e.preventDefault();
+                                        console.log('Checkbox click:', file.fullPath, 'initialized:', isInitialized);
+                                        if (isInitialized) {
+                                            onToggleDocSelection(file.fullPath);
+                                        }
                                     }
                                 }}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={() => {}} // Remove duplicate handler
+                                    onChange={(e) => {
+                                        e.stopPropagation();
+                                        console.log('Checkbox onChange:', file.fullPath, 'initialized:', isInitialized);
+                                        if (isInitialized) {
+                                            onToggleDocSelection(file.fullPath);
+                                        }
+                                    }}
                                     style={{
                                         width: '14px',
                                         height: '14px',
@@ -112,8 +122,6 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         border: '1px solid #cbd5e1',
                                         flexShrink: 0
                                     }}
-                                    onClick={(e) => e.stopPropagation()}
-                                    readOnly
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
@@ -171,16 +179,26 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     }
                                 }}
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    if (isInitialized) {
-                                        onToggleDocSelection(file.fullPath);
+                                    // Only prevent if clicking on the container, not checkbox
+                                    if (e.target.type !== 'checkbox') {
+                                        e.preventDefault();
+                                        console.log('Checkbox click:', file.fullPath, 'initialized:', isInitialized);
+                                        if (isInitialized) {
+                                            onToggleDocSelection(file.fullPath);
+                                        }
                                     }
                                 }}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={() => {}} // Remove duplicate handler
+                                    onChange={(e) => {
+                                        e.stopPropagation();
+                                        console.log('Checkbox onChange:', file.fullPath, 'initialized:', isInitialized);
+                                        if (isInitialized) {
+                                            onToggleDocSelection(file.fullPath);
+                                        }
+                                    }}
                                     style={{
                                         width: '14px',
                                         height: '14px',
@@ -190,8 +208,6 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                         border: '1px solid #cbd5e1',
                                         flexShrink: 0
                                     }}
-                                    onClick={(e) => e.stopPropagation()}
-                                    readOnly
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>

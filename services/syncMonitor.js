@@ -5,17 +5,30 @@ import apiClient from './apiClient.js';
 
 // Global monitoring state to prevent racing
 let isMonitoringActive = false;
+let activeMonitorId = null;
+let monitoringPromise = null;
 
 // Enhanced sync monitoring with stuck sync detection - standalone function
 export const monitorSyncProgressEnhanced = (setIsSyncing, addProgressLog, loadDocuments) => {
-    // Prevent multiple monitoring instances
+    const monitorId = `monitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Return existing monitoring promise if one is active
+    if (monitoringPromise) {
+        console.log(`⚠️ Sync monitoring already running (${activeMonitorId}), returning existing promise for (${monitorId})`);
+        addProgressLog('WARN', 'Sync monitoring already active', `Active: ${activeMonitorId}, Reusing for: ${monitorId}`);
+        return monitoringPromise;
+    }
+    
+    // Double-check with synchronous flag
     if (isMonitoringActive) {
-        console.log('⚠️ Sync monitoring already active, skipping duplicate call');
-        addProgressLog('WARN', 'Sync monitoring already active', 'Preventing duplicate monitoring loop');
-        return;
+        console.log(`⚠️ Sync monitoring flag active (${activeMonitorId}), skipping duplicate call (${monitorId})`);
+        addProgressLog('WARN', 'Sync monitoring flag active', `Active: ${activeMonitorId}, Blocked: ${monitorId}`);
+        return Promise.resolve();
     }
     
     isMonitoringActive = true;
+    activeMonitorId = monitorId;
+    console.log(`🚀 Starting sync monitoring: ${monitorId}`);
     
     let attempts = 0;
     let stuckCount = 0;
@@ -30,11 +43,16 @@ export const monitorSyncProgressEnhanced = (setIsSyncing, addProgressLog, loadDo
     
     addProgressLog('INFO', 'Starting enhanced sync monitoring...', 'Monitoring every 15 seconds with stuck detection');
     
-    // Helper to clean up monitoring state
-    const stopMonitoring = () => {
-        isMonitoringActive = false;
-        console.log('🛑 Sync monitoring stopped');
-    };
+    // Create and store the monitoring promise
+    monitoringPromise = new Promise((resolve, reject) => {
+        // Helper to clean up monitoring state
+        const stopMonitoring = (reason = 'completed') => {
+            console.log(`🛑 Sync monitoring stopped: ${monitorId} (${reason})`);
+            isMonitoringActive = false;
+            activeMonitorId = null;
+            monitoringPromise = null;
+            resolve(reason);
+        };
     
     const checkSync = async () => {
         try {
@@ -147,8 +165,11 @@ export const monitorSyncProgressEnhanced = (setIsSyncing, addProgressLog, loadDo
         }
     };
     
-    // Start monitoring
-    setTimeout(checkSync, 15000);  // Start monitoring after 15 seconds
+        // Start monitoring
+        setTimeout(checkSync, 15000);  // Start monitoring after 15 seconds
+    });
+    
+    return monitoringPromise;
 };
 
 // Helper to check if monitoring is currently active
