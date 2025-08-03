@@ -67,7 +67,8 @@ export const useAppState = () => {
             allFiles,
             selectedDocs
         });
-        const newSelection = selectedDocs.length === allFiles.length ? [] : allFiles;
+        const allSelected = allFiles.length > 0 && allFiles.every(file => selectedDocs.includes(file));
+        const newSelection = allSelected ? [] : allFiles;
         console.log('Setting newSelection:', newSelection);
         setSelectedDocs(newSelection);
         
