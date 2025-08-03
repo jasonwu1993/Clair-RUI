@@ -132,6 +132,22 @@ export const getSelectionSummary = (selectionState, allFiles = []) => {
     return `${selected} of ${total} selected`;
 };
 
+// Create selection state from file array (for backward compatibility)
+export const createSelectionStateFromArray = (selectedFiles = [], allFiles = []) => {
+    if (selectedFiles.length === 0) {
+        return clearAllSelections();
+    } else if (selectedFiles.length === allFiles.length) {
+        return selectAllFiles(allFiles);
+    } else {
+        return {
+            mode: SELECTION_MODES.SPECIFIC,
+            excludedFiles: [],
+            includedFiles: [...selectedFiles],
+            count: selectedFiles.length
+        };
+    }
+};
+
 // Calculate folder selection status for visual indicators
 export const getFolderSelectionStatus = (folderNode, selectionState) => {
     if (!folderNode || !selectionState) return 'none';

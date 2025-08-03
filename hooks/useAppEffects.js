@@ -146,9 +146,9 @@ export const useAppEffects = (state, hooks) => {
             const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
             // Only auto-select on very first load, not after manual clearing
             if (!sessionStorage.getItem('manualSelectionMade')) {
-                setSelectedDocs(allFiles);
-                addProgressLog('INFO', `Auto-selected ${allFiles.length} documents`, 'All available documents selected for search');
-                sessionStorage.setItem('manualSelectionMade', 'true');
+                // Don't auto-select by default - let user choose
+                addProgressLog('INFO', `Found ${allFiles.length} documents`, 'Click "Select All" to select all documents for search');
+                // Don't set manualSelectionMade here - let user make the first choice
             }
         }
     }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog, isInitialized]);

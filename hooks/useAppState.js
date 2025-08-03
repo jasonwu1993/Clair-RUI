@@ -11,7 +11,8 @@ import {
     areAllFilesSelected,
     getSelectedFiles,
     isFileSelected,
-    getFolderSelectionStatus
+    getFolderSelectionStatus,
+    createSelectionStateFromArray
 } from '../utils/selectionUtils.js';
 
 export const useAppState = () => {
@@ -116,16 +117,13 @@ export const useAppState = () => {
     const setSelectedDocs = useCallback((newSelectedArray) => {
         const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
         if (Array.isArray(newSelectedArray)) {
-            const newSelectionState = createSelectionState();
-            newSelectedArray.forEach(filePath => {
-                if (allFiles.includes(filePath)) {
-                    newSelectionState.specificFiles.add(filePath);
-                    newSelectionState.count++;
-                }
-            });
-            newSelectionState.mode = newSelectedArray.length === 0 ? 'none' : 
-                                     newSelectedArray.length === allFiles.length ? 'all' : 'specific';
+            const newSelectionState = createSelectionStateFromArray(newSelectedArray, allFiles);
             setSelectionState(newSelectionState);
+            console.log('setSelectedDocs called:', {
+                inputArray: newSelectedArray,
+                allFiles,
+                newState: newSelectionState
+            });
         }
     }, [availableDocs]);
 
