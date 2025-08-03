@@ -142,7 +142,8 @@ export const useAppEffects = (state, hooks) => {
     // Auto-select documents effect
     useEffect(() => {
         if (availableDocs.length > 0 && selectedDocs.length === 0) {
-            const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+            // Use consistent filter logic matching FilePathTree and handleSelectAll
+            const allFiles = availableDocs.filter(p => p && p.includes('.'));
             setSelectedDocs(allFiles);
             addProgressLog('INFO', `Auto-selected ${allFiles.length} documents`, 'All available documents selected for search');
         }

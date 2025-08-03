@@ -117,8 +117,8 @@ export const useDataFetching = (state) => {
                 console.log('🔍 DEBUG: Extracted docPaths:', docPaths);
                 setAvailableDocs(docPaths);
                 
-                // Auto-select all files (filter path strings that contain dots and don't end with /)
-                const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
+                // Auto-select all files (use consistent filter logic)
+                const allFiles = docPaths.filter(p => p && p.includes('.'));
                 setSelectedDocs(allFiles);
                 
                 addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
