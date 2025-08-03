@@ -25,6 +25,7 @@ const Sidebar = ({
     isSyncing,
     debugInfo,
     onEmergencyReset,
+    onCleanupVertexAI,
     backendStatus,
     connectionQuality,
     onTestConnection,
@@ -59,6 +60,7 @@ const Sidebar = ({
                         debugInfo={debugInfo}
                         syncStatus={syncStatus}
                         onEmergencyReset={onEmergencyReset}
+                        onCleanupVertexAI={onCleanupVertexAI}
                         isSyncing={isSyncing}
                         backendVersion={backendVersion}
                     />

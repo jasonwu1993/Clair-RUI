@@ -199,6 +199,10 @@ class EnhancedAPIClient {
         return this.makeRequest('/emergency_reset', { method: 'POST' }, 15000, 1);
     }
 
+    async cleanupVertexAI() {
+        return this.makeRequest('/cleanup_vertex_ai', { method: 'POST' }, 30000, 1);
+    }
+
     async testGoogleDriveAccess() {
         return this.makeRequest('/debug', {}, 10000, 1);
     }

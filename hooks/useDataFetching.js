@@ -75,42 +75,9 @@ export const useDataFetching = (state) => {
                     return null;
                 }).filter(Boolean);
                 
-                // DEBUG: Check what we're actually filtering
-                console.log('🔍 BEFORE filtering - docPaths:', docPaths);
-                
-                // CRITICAL: Filter out ghost/duplicate files from stale Vertex AI index
-                const originalCount = docPaths.length;
-                
-                // Define the ONLY valid root-level files (everything else should be in folders)
-                const validRootFiles = [
-                    'AI Strategies Highlights Flyer.pdf',
-                    'PATNAM DYNAMIC LOW VOLATILITY STRATEGIES POWERFUL COMBINATION LIM_1664_324_FINAL.pdf'
-                ];
-                
-                docPaths = docPaths.filter(path => {
-                    // Filter out obvious mock files
-                    if (path.includes('Knowledge Base.md') || path.endsWith('.md')) {
-                        console.log('🚫 Filtering out mock file:', path);
-                        return false;
-                    }
-                    
-                    // Check if this is a root-level file (no slashes)
-                    if (!path.includes('/')) {
-                        // Only keep the 2 valid root files
-                        if (!validRootFiles.includes(path)) {
-                            console.log('🚫 Filtering out ghost root file:', path);
-                            return false;
-                        }
-                    }
-                    
-                    return true;
-                });
-                
-                console.log(`🔍 AFTER filtering - ${originalCount} → ${docPaths.length} files:`, docPaths);
-                
                 // Remove duplicates (keep only unique paths)
                 docPaths = [...new Set(docPaths)];
-                console.log(`🧹 Filtered ${docs.length} → ${docPaths.length} files (removed ghosts/duplicates)`);
+                console.log(`📋 Processed ${docs.length} → ${docPaths.length} indexed files (removed duplicates)`);
                 
                 console.log('📍 Using Vertex AI internal paths:', docPaths);
                 console.log('🔍 DEBUG: Raw docs from backend:', docs);

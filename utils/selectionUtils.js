@@ -49,6 +49,10 @@ export const toggleFileSelection = (filePath, selectionState, allFiles = []) => 
                 newState.excludedFiles = [];
                 newState.count = newState.includedFiles.length;
             }
+        } else {
+            // File is not currently selected (was previously excluded), so re-include it
+            newState.excludedFiles = selectionState.excludedFiles.filter(f => f !== filePath);
+            newState.count = allFiles.length - newState.excludedFiles.length;
         }
     } else if (selectionState.mode === SELECTION_MODES.NONE) {
         if (!isCurrentlySelected) {

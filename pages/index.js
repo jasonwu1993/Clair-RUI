@@ -72,6 +72,31 @@ export default function EnhancedApp() {
         }
     };
 
+    const handleCleanupVertexAI = async () => {
+        try {
+            state.addProgressLog('INFO', 'Starting Vertex AI index cleanup...', 'Removing ghost/duplicate documents');
+            
+            const result = await apiClient.cleanupVertexAI();
+            
+            if (result.status === 'success') {
+                state.addProgressLog('SUCCESS', 'Vertex AI cleanup completed', result.message);
+                console.log('✅ Vertex AI cleanup successful:', result);
+                
+                // Refresh document list after cleanup
+                setTimeout(() => {
+                    state.addProgressLog('INFO', 'Refreshing document list...', 'Loading updated indexed documents');
+                    dataFetchingHooks.loadDocuments();
+                }, 1000);
+            } else {
+                throw new Error(result.message || 'Cleanup failed');
+            }
+            
+        } catch (error) {
+            state.addProgressLog('ERROR', 'Vertex AI cleanup failed', error.message);
+            console.error('❌ Vertex AI cleanup failed:', error);
+        }
+    };
+
     // Show loading state during initialization
     if (!state.isInitialized) {
         return (
@@ -103,6 +128,7 @@ export default function EnhancedApp() {
                 isSyncing={state.isSyncing}
                 debugInfo={state.debugInfo}
                 onEmergencyReset={handleEmergencyReset}
+                onCleanupVertexAI={handleCleanupVertexAI}
                 backendStatus={state.backendStatus}
                 connectionQuality={state.connectionQuality}
                 onTestConnection={connectionHooks.testBackendConnection}

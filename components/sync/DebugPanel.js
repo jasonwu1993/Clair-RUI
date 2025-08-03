@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity, Loader2, Trash2 } from '../ui/MockIcons.js';
 import { formatTimestampWithTZ, formatDuration } from '../../utils/formatters.js';
 
-const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, isSyncing, backendVersion }) => {
+const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI, isSyncing, backendVersion }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [syncStartTime, setSyncStartTime] = useState(null);
     const [lastUpdate, setLastUpdate] = useState(null);
@@ -89,7 +89,14 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, isSyncing, backen
                     </div>
                 )}
 
-                <div className="pt-2 border-t border-slate-200">
+                <div className="pt-2 border-t border-slate-200 space-y-2">
+                    <button 
+                        onClick={onCleanupVertexAI}
+                        className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
+                    >
+                        <Activity size={12} />
+                        Clean Vertex AI Index
+                    </button>
                     <button 
                         onClick={onEmergencyReset}
                         className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
