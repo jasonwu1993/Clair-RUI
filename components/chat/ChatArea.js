@@ -13,7 +13,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                         {msg.role === 'ai' && (
                             <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md">
                                 <img 
-                                    src="/Images/Clair_headshot11.png" 
+                                    src="/images/Clair_headshot11.png" 
                                     alt="Clair" 
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
@@ -86,7 +86,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                     <div className="flex items-start gap-4">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md">
                             <img 
-                                src="/Images/Clair_headshot11.png" 
+                                src="/images/Clair_headshot11.png" 
                                 alt="Clair" 
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

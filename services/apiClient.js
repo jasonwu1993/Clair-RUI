@@ -162,15 +162,15 @@ class EnhancedAPIClient {
     }
 
     async syncDrive() {
-        return this.makeRequest('/sync_drive', { method: 'POST' }, API_CONFIG.TIMEOUTS.SYNC, 2);  // Increased retries
+        return this.makeRequest('/documents/sync_drive', { method: 'POST' }, API_CONFIG.TIMEOUTS.SYNC, 2);  // Updated for modular backend
     }
 
     async listFiles() {
-        return this.makeRequest('/list_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Increased retries
+        return this.makeRequest('/documents/list_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
     }
 
     async listIndexedFiles() {
-        return this.makeRequest('/list_indexed_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Get Vertex AI indexed files
+        return this.makeRequest('/documents/list_indexed_files', {}, API_CONFIG.TIMEOUTS.LIST_FILES, 3);  // Updated for modular backend
     }
 
     async askQuestion(query, filters = []) {
@@ -185,11 +185,11 @@ class EnhancedAPIClient {
     }
 
     async getSyncStatus() {
-        return this.makeRequest('/sync_status', {}, API_CONFIG.TIMEOUTS.DEBUG, 1);
+        return this.makeRequest('/documents/sync_status', {}, API_CONFIG.TIMEOUTS.DEBUG, 1);
     }
 
     async getDebugInfo() {
-        return this.makeRequest('/debug_live', {}, API_CONFIG.TIMEOUTS.DEBUG, 1);
+        return this.makeRequest('/admin/debug_live', {}, API_CONFIG.TIMEOUTS.DEBUG, 1);
     }
 
     async submitFeedback(feedbackData) {
@@ -200,15 +200,15 @@ class EnhancedAPIClient {
     }
 
     async emergencyReset() {
-        return this.makeRequest('/emergency_reset', { method: 'POST' }, 15000, 1);
+        return this.makeRequest('/admin/emergency_reset', { method: 'POST' }, 15000, 1);
     }
 
     async cleanupVertexAI() {
-        return this.makeRequest('/cleanup_vertex_ai', { method: 'POST' }, 30000, 1);
+        return this.makeRequest('/admin/cleanup_vertex_ai', { method: 'POST' }, 30000, 1);
     }
 
     async testGoogleDriveAccess() {
-        return this.makeRequest('/debug', {}, 10000, 1);
+        return this.makeRequest('/admin/debug', {}, 10000, 1);
     }
 }
 
