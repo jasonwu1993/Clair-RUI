@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
 import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
-import { CheckSquare, MinusSquare, Square } from '../ui/MockIcons.js';
+import { CheckSquare, MinusSquare, FolderNone, FolderSelected, FolderPartial } from '../ui/MockIcons.js';
 
 const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected, getFolderSelectionStatus, onToggleFolderSelection }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
@@ -40,7 +40,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
         if (!getFolderSelectionStatus || typeof getFolderSelectionStatus !== 'function') {
             return (
                 <div 
-                    className="cursor-pointer hover:bg-slate-200 p-0.5 rounded transition-colors"
+                    className="cursor-pointer hover:bg-slate-100 p-1 rounded-md transition-all duration-200 border border-transparent hover:border-slate-300"
                     onClick={(e) => {
                         e.stopPropagation();
                         if (onToggleFolderSelection) {
@@ -49,7 +49,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                     }}
                     title="Click to select/deselect all files in this folder"
                 >
-                    <Square size={14} className="text-slate-400" />
+                    <FolderNone size={16} className="text-slate-500" />
                 </div>
             );
         }
@@ -73,32 +73,32 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
             case 'all':
                 return (
                     <div 
-                        className="cursor-pointer hover:bg-blue-100 p-0.5 rounded transition-colors"
+                        className="cursor-pointer hover:bg-green-50 p-1 rounded-md transition-all duration-200 border border-transparent hover:border-green-200"
                         onClick={handleClick}
                         title="All files selected - click to deselect all"
                     >
-                        <CheckSquare size={14} className="text-blue-600" />
+                        <FolderSelected size={16} className="text-green-600" />
                     </div>
                 );
             case 'partial':
                 return (
                     <div 
-                        className="cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
+                        className="cursor-pointer hover:bg-orange-50 p-1 rounded-md transition-all duration-200 border border-transparent hover:border-orange-200"
                         onClick={handleClick}
                         title="Some files selected - click to select all"
                     >
-                        <MinusSquare size={14} className="text-gray-600" />
+                        <FolderPartial size={16} className="text-orange-600" />
                     </div>
                 );
             case 'none':
             default:
                 return (
                     <div 
-                        className="cursor-pointer hover:bg-slate-200 p-0.5 rounded transition-colors"
+                        className="cursor-pointer hover:bg-slate-100 p-1 rounded-md transition-all duration-200 border border-transparent hover:border-slate-300"
                         onClick={handleClick}
                         title="No files selected - click to select all"
                     >
-                        <Square size={14} className="text-slate-400" />
+                        <FolderNone size={16} className="text-slate-500" />
                     </div>
                 );
         }
