@@ -16,20 +16,48 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     
     // Calculate if all files are selected for proper Select All / Clear All display
     const allFilePaths = filePaths.filter(path => path && path.includes('.') && !path.endsWith('/'));
-    const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => 
-        isFileSelected ? isFileSelected(path) : selectedDocs.includes(path)
-    );
+    
+    // Helper function to safely check if file is selected
+    const safeIsFileSelected = (path) => {
+        if (isFileSelected && typeof isFileSelected === 'function') {
+            try {
+                return isFileSelected(path);
+            } catch (error) {
+                console.warn('Error checking file selection:', error);
+                return selectedDocs.includes(path);
+            }
+        }
+        return selectedDocs.includes(path);
+    };
+    
+    const allSelected = allFilePaths.length > 0 && allFilePaths.every(safeIsFileSelected);
     
     // Calculate selection summary
-    const selectedCount = allFilePaths.filter(path => 
-        isFileSelected ? isFileSelected(path) : selectedDocs.includes(path)
-    ).length;
+    const selectedCount = allFilePaths.filter(safeIsFileSelected).length;
     
     // Render folder selection indicator
     const renderFolderSelectionIndicator = (folder) => {
-        if (!getFolderSelectionStatus) return null;
+        if (!getFolderSelectionStatus || typeof getFolderSelectionStatus !== 'function') {
+            return (
+                <div 
+                    style={{
+                        width: '12px',
+                        height: '12px',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '2px',
+                        backgroundColor: 'transparent'
+                    }}
+                />
+            );
+        }
         
-        const status = getFolderSelectionStatus(folder);
+        let status;
+        try {
+            status = getFolderSelectionStatus(folder);
+        } catch (error) {
+            console.warn('Error getting folder selection status:', error);
+            status = 'none';
+        }
         const size = 12;
         
         switch (status) {
@@ -132,8 +160,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                 key={file.fullPath}
                                 className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
                                 style={{
-                                    backgroundColor: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '#eff6ff' : 'transparent',
-                                    border: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    backgroundColor: safeIsFileSelected(file.fullPath) ? '#eff6ff' : 'transparent',
+                                    border: safeIsFileSelected(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
@@ -144,14 +172,12 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     paddingLeft: `${(depth + 1) * 16 + 24}px`
                                 }}
                                 onMouseEnter={(e) => {
-                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
-                                    if (!isSelected) {
+                                    if (!safeIsFileSelected(file.fullPath)) {
                                         e.target.style.backgroundColor = '#f8fafc';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
-                                    if (!isSelected) {
+                                    if (!safeIsFileSelected(file.fullPath)) {
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
@@ -159,7 +185,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                             >
                                 <input
                                     type="checkbox"
-                                    checked={isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)}
+                                    checked={safeIsFileSelected(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',
@@ -215,8 +241,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                 key={file.fullPath}
                                 className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
                                 style={{
-                                    backgroundColor: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '#eff6ff' : 'transparent',
-                                    border: (isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    backgroundColor: safeIsFileSelected(file.fullPath) ? '#eff6ff' : 'transparent',
+                                    border: safeIsFileSelected(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px',
@@ -226,14 +252,12 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                                     transition: 'all 0.15s'
                                 }}
                                 onMouseEnter={(e) => {
-                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
-                                    if (!isSelected) {
+                                    if (!safeIsFileSelected(file.fullPath)) {
                                         e.target.style.backgroundColor = '#f8fafc';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
-                                    const isSelected = isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath);
-                                    if (!isSelected) {
+                                    if (!safeIsFileSelected(file.fullPath)) {
                                         e.target.style.backgroundColor = 'transparent';
                                     }
                                 }}
@@ -241,7 +265,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                             >
                                 <input
                                     type="checkbox"
-                                    checked={isFileSelected ? isFileSelected(file.fullPath) : selectedDocs.includes(file.fullPath)}
+                                    checked={safeIsFileSelected(file.fullPath)}
                                     onChange={() => onToggleDocSelection(file.fullPath)}
                                     style={{
                                         width: '14px',

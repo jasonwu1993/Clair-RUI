@@ -35,3 +35,5 @@ export const FileText = (props) => <MockIcon {...props}>📝</MockIcon>;
 export const Image = (props) => <MockIcon {...props}>🖼️</MockIcon>;
 export const FileCode = (props) => <MockIcon {...props}>💻</MockIcon>;
 export const Archive = (props) => <MockIcon {...props}>📦</MockIcon>;
+export const Check = (props) => <MockIcon {...props}>✓</MockIcon>;
+export const Minus = (props) => <MockIcon {...props}>−</MockIcon>;
