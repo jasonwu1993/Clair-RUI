@@ -14,7 +14,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     const totalFolders = Object.keys(fileTree.children).length;
     
     // Calculate if all files are selected for proper Select All / Clear All display
-    const allFilePaths = filePaths.filter(path => path && path.includes('.'));
+    const allFilePaths = filePaths.filter(path => path && path.includes('.') && !path.endsWith('/'));
     const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => selectedDocs.includes(path));
 
     useEffect(() => {
