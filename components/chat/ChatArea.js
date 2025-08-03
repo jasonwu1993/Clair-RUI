@@ -11,8 +11,17 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                 {messages.map((msg, index) => (
                     <div key={index} className={`flex items-start gap-4 ${msg.role === 'user' ? 'justify-end' : ''}`}>
                         {msg.role === 'ai' && (
-                            <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
-                                <Bot className="text-white" size={20} />
+                            <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md">
+                                <img 
+                                    src="/Images/Clair_headshot11.png" 
+                                    alt="Clair" 
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        // Fallback to icon if image fails to load
+                                        e.target.style.display = 'none';
+                                        e.target.parentNode.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"><span class="text-white text-sm font-bold">C</span></div>';
+                                    }}
+                                />
                             </div>
                         )}
                         <div className={`max-w-lg p-4 rounded-xl ${
@@ -29,7 +38,6 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                                 <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-500">
                                     <div className="flex items-center justify-between">
                                         <span>Documents: {msg.metadata.documentsUsed}</span>
-                                        <span>{msg.metadata.model || 'gpt-4o'}</span>
                                     </div>
                                     {msg.metadata.status && msg.metadata.status !== 'success' && (
                                         <div className="mt-1">
@@ -76,8 +84,17 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                 ))}
                 {isSending && (
                     <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-md">
-                            <Bot className="text-white" size={20} />
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md">
+                            <img 
+                                src="/Images/Clair_headshot11.png" 
+                                alt="Clair" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    // Fallback to icon if image fails to load
+                                    e.target.style.display = 'none';
+                                    e.target.parentNode.innerHTML = '<div class="w-full h-full bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center"><span class="text-white text-sm font-bold">C</span></div>';
+                                }}
+                            />
                         </div>
                         <div className="max-w-lg p-4 rounded-xl bg-slate-100 text-slate-800">
                             <TypingIndicator text="Clair is analyzing your question..." />

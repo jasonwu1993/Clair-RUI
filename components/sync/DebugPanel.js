@@ -73,6 +73,10 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                 {showDetails && debugInfo && (
                     <div className="mt-3 space-y-2">
                         <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-600">AI Model:</span>
+                            <span className="font-mono text-blue-600">GPT-4o</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
                             <span className="text-slate-600" title="Files discovered during sync operation">Files Found:</span>
                             <span className="font-mono" title={(debugInfo.sync_progress?.files_found || 0) === 0 ? "No files found during sync - check Google Drive folder permissions" : `${debugInfo.sync_progress?.files_found || 0} files discovered during sync operation`}>
                                 {debugInfo.sync_progress?.files_found || 0}

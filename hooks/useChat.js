@@ -36,7 +36,7 @@ export const useChat = (state) => {
                 if (messages.length === 0) {
                     const fallbackGreeting = {
                         role: 'ai',
-                        content: "Hello, I'm Clair, your trusted and always-on AI financial advisor in wealth planning. How may I assist you today?",
+                        content: "Hello! I'm Clair, your trusted AI financial advisor. I can help you understand your insurance policies, analyze financial documents, and provide personalized financial guidance. How may I assist you today?",
                         isGreeting: true,
                         metadata: {
                             timestamp: new Date().toISOString(),
