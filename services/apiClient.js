@@ -174,10 +174,14 @@ class EnhancedAPIClient {
     }
 
     async askQuestion(query, filters = []) {
-        return this.makeRequest('/ask', {
+        return this.makeRequest('/chat/ask', {
             method: 'POST',
             body: JSON.stringify({ query, filters })
         }, API_CONFIG.TIMEOUTS.QUERY, 2);
+    }
+
+    async getGreeting() {
+        return this.makeRequest('/chat/greeting', {}, 5000, 1);
     }
 
     async getSyncStatus() {
@@ -189,7 +193,7 @@ class EnhancedAPIClient {
     }
 
     async submitFeedback(feedbackData) {
-        return this.makeRequest('/feedback', {
+        return this.makeRequest('/chat/feedback', {
             method: 'POST',
             body: JSON.stringify(feedbackData)
         }, 10000, 1);

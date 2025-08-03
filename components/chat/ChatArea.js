@@ -2,6 +2,7 @@
 import React from 'react';
 import { Bot, User, Loader2, Send } from '../ui/MockIcons.js';
 import { renderTextWithLinks } from '../../utils/fileUtils.js';
+import TypingIndicator from './TypingIndicator.js';
 
 const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessage, chatEndRef, selectedDocsCount, onFeedback }) => (
     <main className="flex-1 flex flex-col bg-white">
@@ -43,7 +44,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                                     )}
                                 </div>
                             )}
-                            {msg.role === 'ai' && !msg.isError && !msg.feedbackGiven && (
+                            {msg.role === 'ai' && !msg.isError && !msg.feedbackGiven && !msg.isGreeting && (
                                 <div className="mt-3 flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Was this helpful?</span>
                                     <button 
@@ -79,10 +80,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                             <Bot className="text-white" size={20} />
                         </div>
                         <div className="max-w-lg p-4 rounded-xl bg-slate-100 text-slate-800">
-                            <div className="flex items-center gap-2">
-                                <Loader2 className="animate-spin" size={16} />
-                                <span>Thinking with GPT-4o...</span>
-                            </div>
+                            <TypingIndicator text="Clair is analyzing your question..." />
                         </div>
                     </div>
                 )}
@@ -106,7 +104,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                                 onSendMessage(); 
                             } 
                         }} 
-                        placeholder="Ask Clair about your financial and insurance documents... (Enhanced with GPT-4o)"
+                        placeholder="Ask Clair about life insurance, financial planning, coverage analysis..."
                         className="w-full min-h-[48px] max-h-32 p-3 pr-12 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         rows={1}
                         disabled={isSending}

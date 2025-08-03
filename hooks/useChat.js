@@ -1,5 +1,5 @@
 // Chat and API operations hook - extracted from original index-original-backup.js
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import apiClient from '../services/apiClient.js';
 
 export const useChat = (state) => {
@@ -10,6 +10,47 @@ export const useChat = (state) => {
         selectedDocs,
         addProgressLog
     } = state;
+
+    // Load Clair's greeting message when chat initializes
+    useEffect(() => {
+        const loadGreeting = async () => {
+            try {
+                // Only show greeting if no messages exist yet
+                if (messages.length === 0) {
+                    const greetingResponse = await apiClient.getGreeting();
+                    const greetingMessage = {
+                        role: 'ai',
+                        content: greetingResponse.greeting,
+                        isGreeting: true,
+                        metadata: {
+                            timestamp: greetingResponse.timestamp,
+                            model: 'Clair System',
+                            status: 'greeting'
+                        }
+                    };
+                    setMessages([greetingMessage]);
+                }
+            } catch (error) {
+                console.warn('Could not load greeting:', error);
+                // Fallback to default greeting if API fails
+                if (messages.length === 0) {
+                    const fallbackGreeting = {
+                        role: 'ai',
+                        content: "Hello, I'm Clair, your trusted and always-on AI financial advisor in wealth planning. How may I assist you today?",
+                        isGreeting: true,
+                        metadata: {
+                            timestamp: new Date().toISOString(),
+                            model: 'Clair System',
+                            status: 'greeting'
+                        }
+                    };
+                    setMessages([fallbackGreeting]);
+                }
+            }
+        };
+
+        loadGreeting();
+    }, []); // Only run once on mount
 
     // Enhanced message sending with progress tracking
     const sendMessage = useCallback(async (query) => {
