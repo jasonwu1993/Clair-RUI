@@ -5,6 +5,7 @@ import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsF
 
 const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
+    const [isInitialized, setIsInitialized] = useState(false);
     
     const fileTree = buildFileTreeFromPaths(filePaths);
     
@@ -20,6 +21,8 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
         if (Object.keys(fileTree.children).length > 0) {
             const rootFolders = Object.keys(fileTree.children);
             setExpandedFolders(new Set(rootFolders));
+            // Stabilize the component after initial load
+            setTimeout(() => setIsInitialized(true), 100);
         }
     }, [filePaths]);
 
@@ -66,20 +69,51 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {folder.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150 ${
-                                    selectedDocs.includes(file.fullPath) 
-                                        ? 'bg-blue-50 border border-blue-200' 
-                                        : 'hover:bg-slate-50'
-                                }`}
-                                style={{ paddingLeft: `${(depth + 1) * 16 + 24}px` }}
-                                onClick={() => onToggleDocSelection(file.fullPath)}
+                                className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
+                                style={{
+                                    backgroundColor: selectedDocs.includes(file.fullPath) ? '#eff6ff' : 'transparent',
+                                    border: selectedDocs.includes(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '6px 8px',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s',
+                                    paddingLeft: `${(depth + 1) * 16 + 24}px`
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!selectedDocs.includes(file.fullPath)) {
+                                        e.target.style.backgroundColor = '#f8fafc';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!selectedDocs.includes(file.fullPath)) {
+                                        e.target.style.backgroundColor = 'transparent';
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    if (isInitialized) {
+                                        onToggleDocSelection(file.fullPath);
+                                    }
+                                }}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0"
+                                    onChange={() => {}} // Remove duplicate handler
+                                    style={{
+                                        width: '14px',
+                                        height: '14px',
+                                        accentColor: '#2563eb',
+                                        cursor: 'pointer',
+                                        borderRadius: '3px',
+                                        border: '1px solid #cbd5e1',
+                                        flexShrink: 0
+                                    }}
                                     onClick={(e) => e.stopPropagation()}
+                                    readOnly
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
@@ -114,19 +148,50 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {fileTree.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150 ${
-                                    selectedDocs.includes(file.fullPath) 
-                                        ? 'bg-blue-50 border border-blue-200' 
-                                        : 'hover:bg-slate-50'
-                                }`}
-                                onClick={() => onToggleDocSelection(file.fullPath)}
+                                className="flex items-center gap-2 py-1.5 px-2 rounded group cursor-pointer transition-all duration-150"
+                                style={{
+                                    backgroundColor: selectedDocs.includes(file.fullPath) ? '#eff6ff' : 'transparent',
+                                    border: selectedDocs.includes(file.fullPath) ? '1px solid #bfdbfe' : '1px solid transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '6px 8px',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.15s'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!selectedDocs.includes(file.fullPath)) {
+                                        e.target.style.backgroundColor = '#f8fafc';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!selectedDocs.includes(file.fullPath)) {
+                                        e.target.style.backgroundColor = 'transparent';
+                                    }
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    if (isInitialized) {
+                                        onToggleDocSelection(file.fullPath);
+                                    }
+                                }}
                             >
                                 <input
                                     type="checkbox"
                                     checked={selectedDocs.includes(file.fullPath)}
-                                    onChange={() => onToggleDocSelection(file.fullPath)}
-                                    className="form-checkbox h-3.5 w-3.5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 flex-shrink-0"
+                                    onChange={() => {}} // Remove duplicate handler
+                                    style={{
+                                        width: '14px',
+                                        height: '14px',
+                                        accentColor: '#2563eb',
+                                        cursor: 'pointer',
+                                        borderRadius: '3px',
+                                        border: '1px solid #cbd5e1',
+                                        flexShrink: 0
+                                    }}
                                     onClick={(e) => e.stopPropagation()}
+                                    readOnly
                                 />
                                 {getFileIcon(file.extension)}
                                 <span className="text-sm text-slate-800 truncate flex-1" title={file.name}>
