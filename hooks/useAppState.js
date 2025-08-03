@@ -1,5 +1,5 @@
 // Main application state hook - extracted from original index-original-backup.js
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { formatTimestampWithTZ, getTimezone } from '../utils/formatters.js';
 import { FRONTEND_VERSION, FRONTEND_BUILD_DATE } from '../utils/constants.js';
 import apiClient from '../services/apiClient.js';
@@ -33,8 +33,8 @@ export const useAppState = () => {
     // Google Drive URL - update this with your actual folder
     const GOOGLE_DRIVE_URL = "https://drive.google.com/drive/folders/1pMiyyfk8hEoVVSsxMmRmobe6dmdm5sjI";
 
-    // Add progress log entry
-    const addProgressLog = (level, message, details = null) => {
+    // Add progress log entry - wrapped in useCallback for stability
+    const addProgressLog = useCallback((level, message, details = null) => {
         const logEntry = {
             timestamp: formatTimestampWithTZ(),
             level,
@@ -49,12 +49,12 @@ export const useAppState = () => {
         });
         
         console.log(`[${level}] ${formatTimestampWithTZ()}: ${message}${details ? ` - ${details}` : ''}`);
-    };
+    }, []);
 
-    const clearProgressLogs = () => {
+    const clearProgressLogs = useCallback(() => {
         setProgressLogs([]);
         addProgressLog('INFO', 'Progress logs cleared');
-    };
+    }, [addProgressLog]);
 
     return {
         // State

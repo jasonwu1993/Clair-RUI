@@ -1,5 +1,5 @@
 // Sync operations hook - extracted from original index-original-backup.js
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import apiClient from '../services/apiClient.js';
 
 export const useSync = (state, hooks = {}) => {
@@ -13,9 +13,21 @@ export const useSync = (state, hooks = {}) => {
     
     // Extract loadDocuments function for refreshing Vertex AI structure  
     const { loadDocuments } = hooks;
+    
+    // Track if monitoring is already active to prevent multiple loops
+    const isMonitoringActiveRef = useRef(false);
 
     // Enhanced sync monitoring with stuck sync detection
     const monitorSyncProgressEnhanced = useCallback(() => {
+        // Prevent multiple monitoring loops
+        if (isMonitoringActiveRef.current) {
+            console.log('⚠️ Sync monitoring already active, skipping duplicate call');
+            addProgressLog('WARN', 'Sync monitoring already active', 'Preventing duplicate monitoring loop');
+            return;
+        }
+        
+        isMonitoringActiveRef.current = true;
+        
         let attempts = 0;
         let stuckCount = 0;
         const maxAttempts = 20; // Monitor for up to 5 minutes (20 × 15s = 5min) - reduced from 30min!
@@ -27,7 +39,13 @@ export const useSync = (state, hooks = {}) => {
         let lastActivity = Date.now();
         let lastFile = null;
         
-        addProgressLog('INFO', 'Starting enhanced sync monitoring...', 'Monitoring every 3 seconds with stuck detection');
+        addProgressLog('INFO', 'Starting enhanced sync monitoring...', 'Monitoring every 15 seconds with stuck detection');
+        
+        // Helper to clean up monitoring state
+        const stopMonitoring = () => {
+            isMonitoringActiveRef.current = false;
+            console.log('🛑 Sync monitoring stopped');
+        };
         
         const checkSync = async () => {
             try {
@@ -74,6 +92,7 @@ export const useSync = (state, hooks = {}) => {
                             }
                         }, 3000); // Wait 3s for indexing to complete
                         
+                        stopMonitoring();
                         return; // CRITICAL: Stop monitoring immediately to prevent request storm
                     }
                     
@@ -113,6 +132,7 @@ export const useSync = (state, hooks = {}) => {
                     addProgressLog('ERROR', `⚠️ SYNC STUCK: No progress for ${Math.floor(timeSinceLastActivity/1000)}s`, 
                         `FORCE STOPPING sync monitoring to prevent request storm after ${attempts} attempts`);
                     setIsSyncing(false);
+                    stopMonitoring();
                     return; // CRITICAL: Force stop to prevent endless requests
                 }
                 
@@ -122,6 +142,7 @@ export const useSync = (state, hooks = {}) => {
                 } else {
                     addProgressLog('WARN', '🔄 Sync monitoring timeout reached', 'Stopped monitoring after 10 minutes');
                     setIsSyncing(false);
+                    stopMonitoring();
                 }
                 
             } catch (error) {
@@ -132,13 +153,14 @@ export const useSync = (state, hooks = {}) => {
                     setTimeout(checkSync, 30000); // 30 seconds on error to prevent request storm
                 } else {
                     setIsSyncing(false);
+                    stopMonitoring();
                 }
             }
         };
         
         // Start monitoring
         setTimeout(checkSync, 15000);  // Start monitoring after 15 seconds
-    }, [setIsSyncing, addProgressLog, loadDocuments]);
+    }, [setIsSyncing, addProgressLog, loadDocuments, isMonitoringActiveRef]);
 
     // Enhanced sync handling with monitoring
     const handleSyncNow = useCallback(async () => {

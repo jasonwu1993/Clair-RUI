@@ -51,9 +51,11 @@ export default function EnhancedApp() {
     };
 
     const handleSelectAll = () => {
-        const allFiles = state.availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+        // Use the same filter logic as the original FilePathTree component
+        const allFiles = state.availableDocs.filter(p => p && p.includes('.'));
         const newSelection = state.selectedDocs.length === allFiles.length ? [] : allFiles;
         state.setSelectedDocs(newSelection);
+        
         state.addProgressLog('INFO', newSelection.length === 0 ? 'Deselected all documents' : `Selected ${newSelection.length} documents`, 'Document selection updated');
     };
 
