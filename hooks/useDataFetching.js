@@ -118,7 +118,7 @@ export const useDataFetching = (state) => {
                 setAvailableDocs(docPaths);
                 
                 // Auto-select all files (use consistent filter logic)
-                const allFiles = docPaths.filter(p => p && p.includes('.'));
+                const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
                 setSelectedDocs(allFiles);
                 
                 addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 

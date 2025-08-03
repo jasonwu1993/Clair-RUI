@@ -50,15 +50,6 @@ export default function EnhancedApp() {
         chatHooks.sendMessage(query);
     };
 
-    const handleSelectAll = () => {
-        // Use the same filter logic as the original FilePathTree component
-        const allFiles = state.availableDocs.filter(p => p && p.includes('.'));
-        const newSelection = state.selectedDocs.length === allFiles.length ? [] : allFiles;
-        state.setSelectedDocs(newSelection);
-        
-        state.addProgressLog('INFO', newSelection.length === 0 ? 'Deselected all documents' : `Selected ${newSelection.length} documents`, 'Document selection updated');
-    };
-
     const handleEmergencyReset = async () => {
         try {
             await dataFetchingHooks.handleEmergencyReset();
@@ -103,7 +94,7 @@ export default function EnhancedApp() {
                 onToggleDocSelection={(path) => state.setSelectedDocs(prev => 
                     prev.includes(path) ? prev.filter(p => p !== path) : [...prev, path]
                 )}
-                onSelectAll={handleSelectAll}
+                onSelectAll={state.handleSelectAll}
                 syncStatus={state.syncStatus}
                 onSyncNow={syncHooks.handleSyncNow}
                 googleDriveUrl={state.GOOGLE_DRIVE_URL}

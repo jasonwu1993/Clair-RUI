@@ -56,6 +56,22 @@ export const useAppState = () => {
         addProgressLog('INFO', 'Progress logs cleared');
     }, [addProgressLog]);
 
+    // Handle select all / clear all functionality
+    const handleSelectAll = useCallback(() => {
+        const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+        const allSelected = selectedDocs.length === allFiles.length && allFiles.length > 0;
+        
+        if (allSelected) {
+            // Clear all selections
+            setSelectedDocs([]);
+            addProgressLog('INFO', 'Deselected all documents', 'Document selection cleared');
+        } else {
+            // Select all files
+            setSelectedDocs(allFiles);
+            addProgressLog('INFO', `Selected ${allFiles.length} documents`, 'All available documents selected');
+        }
+    }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog]);
+
     return {
         // State
         messages,
@@ -97,6 +113,7 @@ export const useAppState = () => {
         
         // Methods
         addProgressLog,
-        clearProgressLogs
+        clearProgressLogs,
+        handleSelectAll
     };
 };
