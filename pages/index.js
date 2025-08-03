@@ -93,6 +93,7 @@ export default function EnhancedApp() {
                 selectedDocs={state.selectedDocs}
                 onToggleDocSelection={state.handleToggleDocSelection}
                 isFileSelected={state.isFileSelected}
+                getFolderSelectionStatus={state.getFolderSelectionStatus}
                 onSelectAll={state.handleSelectAll}
                 syncStatus={state.syncStatus}
                 onSyncNow={syncHooks.handleSyncNow}

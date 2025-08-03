@@ -131,3 +131,36 @@ export const getSelectionSummary = (selectionState, allFiles = []) => {
     if (selected === total) return 'All selected';
     return `${selected} of ${total} selected`;
 };
+
+// Calculate folder selection status for visual indicators
+export const getFolderSelectionStatus = (folderNode, selectionState) => {
+    if (!folderNode || !selectionState) return 'none';
+    
+    // Collect all files within this folder (recursively)
+    const allFilesInFolder = [];
+    
+    const collectFiles = (node) => {
+        // Add direct files
+        if (node.files) {
+            node.files.forEach(file => allFilesInFolder.push(file.fullPath));
+        }
+        
+        // Recursively add files from subfolders
+        if (node.children) {
+            Object.values(node.children).forEach(childNode => collectFiles(childNode));
+        }
+    };
+    
+    collectFiles(folderNode);
+    
+    if (allFilesInFolder.length === 0) return 'none';
+    
+    // Check selection status of all files
+    const selectedCount = allFilesInFolder.filter(filePath => 
+        isFileSelected(filePath, selectionState, allFilesInFolder)
+    ).length;
+    
+    if (selectedCount === 0) return 'none';
+    if (selectedCount === allFilesInFolder.length) return 'all';
+    return 'partial';
+};

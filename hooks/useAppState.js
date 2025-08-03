@@ -10,7 +10,8 @@ import {
     toggleFileSelection,
     areAllFilesSelected,
     getSelectedFiles,
-    isFileSelected 
+    isFileSelected,
+    getFolderSelectionStatus
 } from '../utils/selectionUtils.js';
 
 export const useAppState = () => {
@@ -175,6 +176,7 @@ export const useAppState = () => {
         
         // Selection utilities for advanced use cases
         selectionState,
-        isFileSelected: (filePath) => isFileSelected(filePath, selectionState)
+        isFileSelected: (filePath) => isFileSelected(filePath, selectionState),
+        getFolderSelectionStatus: (folderNode) => getFolderSelectionStatus(folderNode, selectionState)
     };
 };

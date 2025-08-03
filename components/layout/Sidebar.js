@@ -15,6 +15,7 @@ const Sidebar = ({
     selectedDocs, 
     onToggleDocSelection,
     isFileSelected,
+    getFolderSelectionStatus,
     onSelectAll,
     syncStatus,
     onSyncNow,
@@ -106,6 +107,7 @@ const Sidebar = ({
                     selectedDocs={selectedDocs}
                     onToggleDocSelection={onToggleDocSelection}
                     isFileSelected={isFileSelected}
+                    getFolderSelectionStatus={getFolderSelectionStatus}
                     onSelectAll={onSelectAll}
                 />
             </div>

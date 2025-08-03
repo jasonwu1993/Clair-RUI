@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
 import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
+import { Check, Minus } from '../ui/MockIcons.js';
 
-const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected }) => {
+const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected, getFolderSelectionStatus }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
     const [isInitialized, setIsInitialized] = useState(true); // Start as initialized to debug
     
@@ -18,6 +19,63 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     const allSelected = allFilePaths.length > 0 && allFilePaths.every(path => 
         isFileSelected ? isFileSelected(path) : selectedDocs.includes(path)
     );
+    
+    // Calculate selection summary
+    const selectedCount = allFilePaths.filter(path => 
+        isFileSelected ? isFileSelected(path) : selectedDocs.includes(path)
+    ).length;
+    
+    // Render folder selection indicator
+    const renderFolderSelectionIndicator = (folder) => {
+        if (!getFolderSelectionStatus) return null;
+        
+        const status = getFolderSelectionStatus(folder);
+        const size = 12;
+        
+        switch (status) {
+            case 'all':
+                return (
+                    <div 
+                        className="flex items-center justify-center rounded" 
+                        style={{
+                            width: `${size}px`,
+                            height: `${size}px`,
+                            backgroundColor: '#2563eb',
+                            color: 'white'
+                        }}
+                    >
+                        <Check size={size - 2} />
+                    </div>
+                );
+            case 'partial':
+                return (
+                    <div 
+                        className="flex items-center justify-center rounded" 
+                        style={{
+                            width: `${size}px`,
+                            height: `${size}px`,
+                            backgroundColor: '#6b7280',
+                            color: 'white'
+                        }}
+                    >
+                        <Minus size={size - 2} />
+                    </div>
+                );
+            case 'none':
+            default:
+                return (
+                    <div 
+                        style={{
+                            width: `${size}px`,
+                            height: `${size}px`,
+                            border: '1px solid #cbd5e1',
+                            borderRadius: '2px',
+                            backgroundColor: 'transparent'
+                        }}
+                    />
+                );
+        }
+    };
 
     useEffect(() => {
         if (Object.keys(fileTree.children).length > 0) {
@@ -56,6 +114,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                     ) : (
                         <ChevronRight size={14} className="text-slate-500" />
                     )}
+                    {renderFolderSelectionIndicator(folder)}
                     {isExpanded ? (
                         <FolderOpen size={16} className="text-yellow-600" />
                     ) : (
@@ -128,9 +187,14 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
     return (
         <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
             <div className="bg-slate-900 px-3 py-2 border-b border-slate-200 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-white">
-                    Knowledge Base ({totalFiles} files, {totalFolders} folders)
-                </h3>
+                <div className="flex flex-col">
+                    <h3 className="text-sm font-semibold text-white">
+                        Knowledge Base ({totalFiles} files, {totalFolders} folders)
+                    </h3>
+                    <p className="text-xs text-slate-300">
+                        {selectedCount} of {totalFiles} files selected
+                    </p>
+                </div>
                 <button 
                     onClick={() => {
                         console.log('Clear All clicked, allSelected:', allSelected, 'allFilePaths:', allFilePaths, 'selectedDocs:', selectedDocs);
