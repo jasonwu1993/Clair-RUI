@@ -95,7 +95,7 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                             <button 
                                 onClick={onCleanupVertexAI}
                                 className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
-                                title="SAFE: Only removes 7 specific ghost files, keeps all good documents"
+                                title="SMART CLEANUP: Dynamically detects and removes any ghost/orphaned documents from Vertex AI index by comparing with current Google Drive files. Only removes confirmed ghosts, preserves all legitimate documents."
                             >
                                 <Activity size={12} />
                                 Remove Ghost Files Only
@@ -103,7 +103,7 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                             <button 
                                 onClick={onEmergencyReset}
                                 className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-                                title="Emergency Reset: Clears all cached data and forces full system refresh. This will reset file selections and reload everything from scratch."
+                                title="Emergency Reset: Clears only app state and session data, then reloads file structure from Vertex AI with auto-selection. Does NOT delete any knowledge base content."
                             >
                                 <Trash2 size={12} />
                                 Emergency Reset

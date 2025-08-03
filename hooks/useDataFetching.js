@@ -138,10 +138,10 @@ export const useDataFetching = (state) => {
         }
     }, [setAvailableDocs, setSelectedDocs, addProgressLog]);
 
-    // Enhanced emergency reset
+    // Enhanced emergency reset with automatic reinitialization
     const handleEmergencyReset = useCallback(async () => {
         try {
-            addProgressLog('WARN', 'Emergency reset initiated', 'Clearing all data and resetting system');
+            addProgressLog('WARN', 'Emergency reset initiated', 'Clearing app state and reloading from Vertex AI');
             
             const result = await apiClient.emergencyReset();
             console.log('✅ Emergency reset successful:', result);
@@ -152,7 +152,24 @@ export const useDataFetching = (state) => {
             setAvailableDocs([]);
             setSelectedDocs([]);
             
-            addProgressLog('SUCCESS', 'Emergency reset completed', 'All systems reset successfully');
+            // Clear session storage to trigger fresh initialization
+            sessionStorage.removeItem('appInitialized');
+            sessionStorage.removeItem('manualSelectionMade');
+            
+            addProgressLog('SUCCESS', 'Emergency reset completed', 'App state cleared - reloading from Vertex AI');
+            
+            // Trigger standard app initialization (reload documents and auto-select)
+            setTimeout(async () => {
+                try {
+                    addProgressLog('INFO', 'Reloading file structure', 'Fetching documents from Vertex AI index');
+                    const docs = await loadDocuments(); // This will trigger auto-selection due to cleared sessionStorage
+                    if (docs && docs.length > 0) {
+                        addProgressLog('SUCCESS', 'App reinitialization complete', `Reloaded ${docs.length} documents with auto-selection`);
+                    }
+                } catch (reloadError) {
+                    addProgressLog('ERROR', 'Failed to reload documents after reset', reloadError.message);
+                }
+            }, 1000); // Small delay to allow UI to update
             
             return result;
         } catch (error) {
@@ -160,7 +177,7 @@ export const useDataFetching = (state) => {
             console.error('❌ Emergency reset failed:', error);
             throw error;
         }
-    }, [setSyncStatus, setDebugInfo, setAvailableDocs, setSelectedDocs, addProgressLog]);
+    }, [setSyncStatus, setDebugInfo, setAvailableDocs, setSelectedDocs, addProgressLog, loadDocuments]);
 
     return {
         fetchSyncStatus,
