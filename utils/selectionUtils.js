@@ -180,3 +180,48 @@ export const getFolderSelectionStatus = (folderNode, selectionState) => {
     if (selectedCount === allFilesInFolder.length) return 'all';
     return 'partial';
 };
+
+// Get all files in a folder (recursively)
+export const getAllFilesInFolder = (folderNode) => {
+    const allFiles = [];
+    
+    const collectFiles = (node) => {
+        // Add direct files
+        if (node.files) {
+            node.files.forEach(file => allFiles.push(file.fullPath));
+        }
+        
+        // Recursively add files from subfolders
+        if (node.children) {
+            Object.values(node.children).forEach(childNode => collectFiles(childNode));
+        }
+    };
+    
+    collectFiles(folderNode);
+    return allFiles;
+};
+
+// Toggle all files in a folder
+export const toggleFolderSelection = (folderNode, selectionState, allFiles = []) => {
+    const folderFiles = getAllFilesInFolder(folderNode);
+    if (folderFiles.length === 0) return selectionState;
+    
+    const folderStatus = getFolderSelectionStatus(folderNode, selectionState);
+    const shouldSelectAll = folderStatus !== 'all'; // If not all selected, select all; otherwise clear all
+    
+    let newSelectionState = { ...selectionState };
+    
+    // Apply the toggle to each file in the folder
+    folderFiles.forEach(filePath => {
+        const currentlySelected = isFileSelected(filePath, newSelectionState, allFiles);
+        if (shouldSelectAll && !currentlySelected) {
+            // Select this file
+            newSelectionState = toggleFileSelection(filePath, newSelectionState, allFiles);
+        } else if (!shouldSelectAll && currentlySelected) {
+            // Deselect this file
+            newSelectionState = toggleFileSelection(filePath, newSelectionState, allFiles);
+        }
+    });
+    
+    return newSelectionState;
+};

@@ -12,7 +12,8 @@ import {
     getSelectedFiles,
     isFileSelected,
     getFolderSelectionStatus,
-    createSelectionStateFromArray
+    createSelectionStateFromArray,
+    toggleFolderSelection
 } from '../utils/selectionUtils.js';
 
 export const useAppState = () => {
@@ -110,6 +111,26 @@ export const useAppState = () => {
         sessionStorage.setItem('manualSelectionMade', 'true');
     }, [availableDocs, selectionState]);
 
+    // Helper to toggle all files in a folder
+    const handleToggleFolderSelection = useCallback((folderNode) => {
+        const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
+        const newSelectionState = toggleFolderSelection(folderNode, selectionState, allFiles);
+        
+        console.log('Toggle folder selection:', {
+            folder: folderNode.path,
+            oldState: selectionState,
+            newState: newSelectionState
+        });
+        
+        setSelectionState(newSelectionState);
+        sessionStorage.setItem('manualSelectionMade', 'true');
+        
+        addProgressLog('INFO', 
+            `Toggled selection for folder: ${folderNode.name}`,
+            'Folder files selection updated'
+        );
+    }, [availableDocs, selectionState, addProgressLog]);
+
     // Backward compatibility: get actual selected docs array when needed
     const selectedDocs = getSelectedFiles(selectionState, availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/')));
 
@@ -171,6 +192,7 @@ export const useAppState = () => {
         clearProgressLogs,
         handleSelectAll,
         handleToggleDocSelection,
+        handleToggleFolderSelection,
         
         // Selection utilities for advanced use cases
         selectionState,

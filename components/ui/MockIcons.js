@@ -37,3 +37,6 @@ export const FileCode = (props) => <MockIcon {...props}>💻</MockIcon>;
 export const Archive = (props) => <MockIcon {...props}>📦</MockIcon>;
 export const Check = (props) => <MockIcon {...props}>✓</MockIcon>;
 export const Minus = (props) => <MockIcon {...props}>−</MockIcon>;
+export const Square = (props) => <MockIcon {...props}>☐</MockIcon>;
+export const CheckSquare = (props) => <MockIcon {...props}>☑</MockIcon>;
+export const MinusSquare = (props) => <MockIcon {...props}>⊟</MockIcon>;

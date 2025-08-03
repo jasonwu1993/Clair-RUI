@@ -139,16 +139,21 @@ export const useAppEffects = (state, hooks) => {
         };
     }, [isMonitoring, isInitialized, isSyncing, fetchSyncStatus, fetchDebugInfo, testBackendConnection, loadDocuments]);
 
-    // Auto-select documents effect - only on initial load
+    // One-time auto-select documents effect - only on very first initialization
     useEffect(() => {
         if (availableDocs.length > 0 && selectedDocs.length === 0 && isInitialized) {
             // Use consistent filter logic matching FilePathTree and handleSelectAll
             const allFiles = availableDocs.filter(p => p && p.includes('.') && !p.endsWith('/'));
-            // Only auto-select on very first load, not after manual clearing
-            if (!sessionStorage.getItem('manualSelectionMade')) {
-                // Don't auto-select by default - let user choose
-                addProgressLog('INFO', `Found ${allFiles.length} documents`, 'Click "Select All" to select all documents for search');
-                // Don't set manualSelectionMade here - let user make the first choice
+            // Only auto-select once on very first app initialization, never again
+            if (!sessionStorage.getItem('hasEverAutoSelected')) {
+                setSelectedDocs(allFiles);
+                addProgressLog('INFO', `Auto-selected ${allFiles.length} documents`, 'All available documents selected for search (one-time initialization)');
+                // Mark that we've done the one-time auto-selection
+                sessionStorage.setItem('hasEverAutoSelected', 'true');
+                sessionStorage.setItem('manualSelectionMade', 'true');
+            } else {
+                // After first time, just show the available documents without selecting
+                addProgressLog('INFO', `Found ${allFiles.length} documents`, 'Use "Select All" or individual checkboxes to choose documents for search');
             }
         }
     }, [availableDocs, selectedDocs.length, setSelectedDocs, addProgressLog, isInitialized]);

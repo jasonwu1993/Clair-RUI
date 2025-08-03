@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Folder, FolderOpen, ChevronRight, ChevronDown } from '../ui/MockIcons.js';
 import { buildFileTreeFromPaths, getFileIcon, countFilesInNode, getAllFilePathsFromNode } from '../../utils/fileUtils.js';
-import { Check, Minus } from '../ui/MockIcons.js';
+import { CheckSquare, MinusSquare, Square } from '../ui/MockIcons.js';
 
-const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected, getFolderSelectionStatus }) => {
+const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection, onSelectAll, isFileSelected, getFolderSelectionStatus, onToggleFolderSelection }) => {
     const [expandedFolders, setExpandedFolders] = useState(new Set());
     const [isInitialized, setIsInitialized] = useState(true); // Start as initialized to debug
     
@@ -40,14 +40,17 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
         if (!getFolderSelectionStatus || typeof getFolderSelectionStatus !== 'function') {
             return (
                 <div 
-                    style={{
-                        width: '12px',
-                        height: '12px',
-                        border: '1px solid #cbd5e1',
-                        borderRadius: '2px',
-                        backgroundColor: 'transparent'
+                    className="cursor-pointer hover:bg-slate-200 p-0.5 rounded transition-colors"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (onToggleFolderSelection) {
+                            onToggleFolderSelection(folder);
+                        }
                     }}
-                />
+                    title="Click to select/deselect all files in this folder"
+                >
+                    <Square size={14} className="text-slate-400" />
+                </div>
             );
         }
         
@@ -58,49 +61,45 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
             console.warn('Error getting folder selection status:', error);
             status = 'none';
         }
-        const size = 12;
+        
+        const handleClick = (e) => {
+            e.stopPropagation();
+            if (onToggleFolderSelection) {
+                onToggleFolderSelection(folder);
+            }
+        };
         
         switch (status) {
             case 'all':
                 return (
                     <div 
-                        className="flex items-center justify-center rounded" 
-                        style={{
-                            width: `${size}px`,
-                            height: `${size}px`,
-                            backgroundColor: '#2563eb',
-                            color: 'white'
-                        }}
+                        className="cursor-pointer hover:bg-blue-100 p-0.5 rounded transition-colors"
+                        onClick={handleClick}
+                        title="All files selected - click to deselect all"
                     >
-                        <Check size={size - 2} />
+                        <CheckSquare size={14} className="text-blue-600" />
                     </div>
                 );
             case 'partial':
                 return (
                     <div 
-                        className="flex items-center justify-center rounded" 
-                        style={{
-                            width: `${size}px`,
-                            height: `${size}px`,
-                            backgroundColor: '#6b7280',
-                            color: 'white'
-                        }}
+                        className="cursor-pointer hover:bg-gray-100 p-0.5 rounded transition-colors"
+                        onClick={handleClick}
+                        title="Some files selected - click to select all"
                     >
-                        <Minus size={size - 2} />
+                        <MinusSquare size={14} className="text-gray-600" />
                     </div>
                 );
             case 'none':
             default:
                 return (
                     <div 
-                        style={{
-                            width: `${size}px`,
-                            height: `${size}px`,
-                            border: '1px solid #cbd5e1',
-                            borderRadius: '2px',
-                            backgroundColor: 'transparent'
-                        }}
-                    />
+                        className="cursor-pointer hover:bg-slate-200 p-0.5 rounded transition-colors"
+                        onClick={handleClick}
+                        title="No files selected - click to select all"
+                    >
+                        <Square size={14} className="text-slate-400" />
+                    </div>
                 );
         }
     };
