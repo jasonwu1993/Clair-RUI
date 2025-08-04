@@ -70,6 +70,27 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                     </div>
                 )}
 
+                {/* Admin Actions - always visible */}
+                <div className="pt-2 border-t border-slate-200 space-y-2">
+                    <div className="text-xs text-slate-600 font-medium mb-2">Admin Actions</div>
+                    <button 
+                        onClick={onCleanupVertexAI}
+                        className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
+                        title="SMART CLEANUP: Dynamically detects and removes any ghost/orphaned documents from Vertex AI index by comparing with current Google Drive files. Only removes confirmed ghosts, preserves all legitimate documents."
+                    >
+                        <Activity size={12} />
+                        Remove Ghost Files Only
+                    </button>
+                    <button 
+                        onClick={onEmergencyReset}
+                        className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
+                        title="Emergency Reset: Clears only app state and session data, then reloads file structure from Vertex AI with auto-selection. Does NOT delete any knowledge base content."
+                    >
+                        <Trash2 size={12} />
+                        Emergency Reset
+                    </button>
+                </div>
+
                 {showDetails && debugInfo && (
                     <div className="mt-3 space-y-2">
                         <div className="flex items-center justify-between text-xs">
@@ -91,27 +112,6 @@ const DebugPanel = ({ debugInfo, syncStatus, onEmergencyReset, onCleanupVertexAI
                             <span className="font-mono text-blue-600">
                                 {debugInfo.sync_progress?.current_operation || 'monitoring'}
                             </span>
-                        </div>
-                        
-                        {/* Admin Actions - moved here under collapsed section */}
-                        <div className="pt-2 border-t border-slate-200 space-y-2">
-                            <div className="text-xs text-slate-600 font-medium mb-2">Admin Actions</div>
-                            <button 
-                                onClick={onCleanupVertexAI}
-                                className="w-full text-xs bg-orange-600 text-white px-3 py-2 rounded hover:bg-orange-700 transition-colors flex items-center justify-center gap-1"
-                                title="SMART CLEANUP: Dynamically detects and removes any ghost/orphaned documents from Vertex AI index by comparing with current Google Drive files. Only removes confirmed ghosts, preserves all legitimate documents."
-                            >
-                                <Activity size={12} />
-                                Remove Ghost Files Only
-                            </button>
-                            <button 
-                                onClick={onEmergencyReset}
-                                className="w-full text-xs bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-colors flex items-center justify-center gap-1"
-                                title="Emergency Reset: Clears only app state and session data, then reloads file structure from Vertex AI with auto-selection. Does NOT delete any knowledge base content."
-                            >
-                                <Trash2 size={12} />
-                                Emergency Reset
-                            </button>
                         </div>
                     </div>
                 )}
