@@ -34,24 +34,6 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                             <div className="whitespace-pre-wrap">
                                 {renderTextWithLinks(msg.content)}
                             </div>
-                            {msg.metadata && (
-                                <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-500">
-                                    <div className="flex items-center justify-between">
-                                        <span>Documents: {msg.metadata.documentsUsed}</span>
-                                    </div>
-                                    {msg.metadata.status && msg.metadata.status !== 'success' && (
-                                        <div className="mt-1">
-                                            <span className={`px-2 py-1 rounded text-xs ${
-                                                msg.metadata.status === 'timeout' ? 'bg-orange-100 text-orange-800' :
-                                                msg.metadata.status === 'error' ? 'bg-red-100 text-red-800' :
-                                                'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {msg.metadata.status}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
                             {msg.role === 'ai' && !msg.isError && !msg.feedbackGiven && !msg.isGreeting && (
                                 <div className="mt-3 flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Was this helpful?</span>
@@ -83,8 +65,8 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                     </div>
                 ))}
                 {isSending && (
-                    <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md">
+                    <div className="flex items-start gap-4 animate-fade-in">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden shadow-md ring-2 ring-yellow-200 ring-opacity-50 animate-pulse">
                             <img 
                                 src="/Images/Clair_headshot11.png" 
                                 alt="Clair" 
@@ -96,7 +78,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                                 }}
                             />
                         </div>
-                        <div className="max-w-lg p-4 rounded-xl bg-slate-100 text-slate-800">
+                        <div className="max-w-lg p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 text-slate-800 shadow-sm border border-slate-200 animate-pulse">
                             <TypingIndicator text="Clair is analyzing your question..." />
                         </div>
                     </div>
@@ -121,7 +103,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                                 onSendMessage(); 
                             } 
                         }} 
-                        placeholder="Ask Clair about life insurance, financial planning, coverage analysis..."
+                        placeholder="Ask Clair: What life insurance policy is right for me? How much coverage do I need? Compare term vs whole life..."
                         className="w-full min-h-[48px] max-h-32 p-3 pr-12 border border-slate-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         rows={1}
                         disabled={isSending}
