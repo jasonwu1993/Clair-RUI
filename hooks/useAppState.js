@@ -21,7 +21,7 @@ export const useAppState = () => {
     const [messages, setMessages] = useState([
         { 
             role: 'ai', 
-            content: `Hello! I'm Clair Enhanced ${FRONTEND_VERSION}, your AI financial advisor powered by GPT-4o with comprehensive debugging and real-time monitoring. Current time: ${formatTimestampWithTZ()} (${getTimezone()}). I can help you understand your insurance policies, financial documents, and provide personalized financial guidance. Please sync your Google Drive folder to get started, then ask me any questions about your documents.` 
+            content: `Hello, I'm Clair, your trusted and always-on AI financial advisor in wealth planning. How may I assist you today?` 
         }
     ]);
     
