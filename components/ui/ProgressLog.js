@@ -58,7 +58,7 @@ const ProgressLog = ({ progressLogs = [], isSyncing, onClear }) => {
                 </div>
             </div>
             
-            <div className="max-h-64 overflow-y-auto">
+            <div className="h-64 overflow-y-auto">
                 {progressLogs.length === 0 ? (
                     <div className="p-4 text-center text-slate-500 text-sm">
                         No progress logs yet. Start a sync to see detailed progress.
