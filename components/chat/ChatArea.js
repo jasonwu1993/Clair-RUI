@@ -144,11 +144,6 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
         </div>
         <div className="bg-white border-t border-slate-200 p-4">
             <div className="max-w-4xl mx-auto">
-                {selectedDocsCount > 0 && (
-                    <div className="mb-2 text-xs text-slate-500">
-                        Searching in {selectedDocsCount} selected document{selectedDocsCount !== 1 ? 's' : ''}
-                    </div>
-                )}
                 <div className="relative">
                     <textarea 
                         ref={inputRef}
