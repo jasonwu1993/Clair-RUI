@@ -87,25 +87,19 @@ export const useDataFetching = (state) => {
                 // Auto-select all files during initialization phase
                 const allFiles = docPaths.filter(p => p && p.includes('.') && !p.endsWith('/'));
                 const hasManualSelection = sessionStorage.getItem('manualSelectionMade');
-                const currentSelectedCount = state.selectedDocs ? state.selectedDocs.length : 0;
                 
                 // Always select all files on initial load unless user has made manual selections
-                if (!hasManualSelection && currentSelectedCount === 0) {
-                    // Default behavior: Select all files when no selection exists
+                if (!hasManualSelection) {
+                    // Default behavior: Always select all files when no manual selection has been made
                     setSelectedDocs(allFiles);
                     console.log('🎯 Default "Select All" applied:', allFiles.length, 'files selected');
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
                         `Default "Select All" applied - ${allFiles.length} files selected for search`);
-                } else if (hasManualSelection) {
+                } else {
                     // User has made manual selections - respect their preferences
                     console.log('👤 Preserving user selection preferences');
                     addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
                         `Preserved existing file selection preferences`);
-                } else {
-                    // Files are already selected - maintain current selection
-                    console.log('✅ Maintaining current selection:', currentSelectedCount, 'files');
-                    addProgressLog('SUCCESS', `Loaded ${docPaths.length} indexed documents in ${loadTime}ms`, 
-                        `Maintained current selection - ${currentSelectedCount} files selected`);
                 }
                 console.log(`✅ Loaded ${docPaths.length} documents with Vertex AI internal paths`);
                 

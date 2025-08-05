@@ -28,6 +28,10 @@ export const useAppEffects = (state, hooks) => {
             addProgressLog('INFO', `🚀 Initializing Enhanced RAG Clair System ${FRONTEND_VERSION}`, `Build date: ${FRONTEND_BUILD_DATE}`);
             console.log('🚀 Initializing Enhanced RAG Clair System...');
             
+            // Clear manual selection flag on fresh page load to ensure "Select All" works
+            sessionStorage.removeItem('manualSelectionMade');
+            console.log('🔄 Cleared manual selection flag for fresh initialization');
+            
             // Initial setup with error handling
             const initializeApp = async () => {
                 try {
