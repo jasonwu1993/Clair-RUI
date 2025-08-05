@@ -50,6 +50,13 @@ export default function EnhancedApp() {
         chatHooks.sendMessage(query);
     };
 
+    const handleHotkeyClick = (hotkeyLetter) => {
+        if (state.isSending) return;
+        
+        // Send the hotkey letter as a message
+        chatHooks.sendMessage(hotkeyLetter.trim());
+    };
+
     const handleEmergencyReset = async () => {
         try {
             await dataFetchingHooks.handleEmergencyReset();
@@ -147,6 +154,7 @@ export default function EnhancedApp() {
                 chatEndRef={state.chatEndRef}
                 selectedDocsCount={state.selectedDocs.length}
                 onFeedback={chatHooks.handleFeedback}
+                onHotkeyClick={handleHotkeyClick}
             />
         </div>
     );

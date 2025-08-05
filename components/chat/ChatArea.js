@@ -4,7 +4,7 @@ import { Bot, User, Loader2, Send } from '../ui/MockIcons.js';
 import { renderTextWithLinks } from '../../utils/fileUtils.js';
 import TypingIndicator from './TypingIndicator.js';
 
-const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessage, chatEndRef, selectedDocsCount, onFeedback }) => {
+const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessage, chatEndRef, selectedDocsCount, onFeedback, onHotkeyClick }) => {
     const inputRef = useRef(null);
     
     // Auto-focus on mount and after sending messages
@@ -90,6 +90,26 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                             {msg.feedbackGiven && (
                                 <div className="mt-2 text-xs text-slate-500">
                                     Thank you for your feedback! ({msg.feedbackGiven})
+                                </div>
+                            )}
+                            {msg.role === 'ai' && !msg.isError && msg.hotkey_suggestions && msg.hotkey_suggestions.length > 0 && (
+                                <div className="mt-3 pt-3 border-t border-slate-200">
+                                    <div className="text-xs text-slate-500 mb-2">Quick actions:</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {msg.hotkey_suggestions.map((hotkey, idx) => {
+                                            const [key, description] = hotkey.split(': ');
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => onHotkeyClick && onHotkeyClick(key.trim())}
+                                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-yellow-100 to-orange-100 hover:from-yellow-200 hover:to-orange-200 text-slate-700 rounded-full border border-yellow-200 hover:border-orange-300 transition-all shadow-sm hover:shadow-md"
+                                                >
+                                                    <span className="font-mono font-semibold text-orange-600">{key}</span>
+                                                    <span className="text-slate-600">{description}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
                         </div>

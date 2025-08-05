@@ -87,6 +87,7 @@ export const useChat = (state) => {
             setMessages(prev => [...prev, { 
                 role: 'ai', 
                 content: aiResponse,
+                hotkey_suggestions: (response && response.hotkey_suggestions) || [],
                 metadata: {
                     timestamp: new Date().toISOString(),
                     documentsUsed: selectedDocs.length,
