@@ -1,10 +1,46 @@
 // ChatArea component - extracted from original index-original-backup.js
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Bot, User, Loader2, Send } from '../ui/MockIcons.js';
 import { renderTextWithLinks } from '../../utils/fileUtils.js';
 import TypingIndicator from './TypingIndicator.js';
 
-const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessage, chatEndRef, selectedDocsCount, onFeedback }) => (
+const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessage, chatEndRef, selectedDocsCount, onFeedback }) => {
+    const inputRef = useRef(null);
+    
+    // Auto-focus on mount and after sending messages
+    useEffect(() => {
+        if (inputRef.current && !isSending) {
+            inputRef.current.focus();
+        }
+    }, [isSending, messages.length]);
+    
+    // Keep focus when component updates
+    useEffect(() => {
+        const handleFocus = () => {
+            if (inputRef.current && document.activeElement !== inputRef.current) {
+                // Only refocus if user isn't actively selecting text or interacting with other elements
+                const selection = window.getSelection();
+                if (!selection || selection.toString().length === 0) {
+                    setTimeout(() => {
+                        if (inputRef.current) {
+                            inputRef.current.focus();
+                        }
+                    }, 100);
+                }
+            }
+        };
+        
+        // Add event listeners to refocus
+        document.addEventListener('click', handleFocus);
+        window.addEventListener('focus', handleFocus);
+        
+        return () => {
+            document.removeEventListener('click', handleFocus);
+            window.removeEventListener('focus', handleFocus);
+        };
+    }, []);
+    
+    return (
     <main className="flex-1 flex flex-col bg-white">
         <div className="flex-1 p-6 overflow-y-auto">
             <div className="max-w-4xl mx-auto space-y-6">
@@ -95,6 +131,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
                 )}
                 <div className="relative">
                     <textarea 
+                        ref={inputRef}
                         value={inputQuery} 
                         onChange={onInputChange} 
                         onKeyDown={(e) => { 
@@ -119,6 +156,7 @@ const ChatArea = ({ messages, isSending, inputQuery, onInputChange, onSendMessag
             </div>
         </div>
     </main>
-);
+    );
+};
 
 export default ChatArea;
