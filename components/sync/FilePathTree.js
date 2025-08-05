@@ -133,7 +133,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
             <div key={folder.path}>
                 {/* Folder row */}
                 <div 
-                    className="flex items-center gap-1 px-2 py-1.5 rounded cursor-pointer hover:bg-slate-50 text-sm group relative"
+                    className="flex items-center gap-1 px-2 py-0.5 rounded cursor-pointer hover:bg-slate-50 text-sm group relative"
                     onClick={() => toggleFolder(folder.path)}
                 >
                     {/* Vertical lines for structure */}
@@ -182,7 +182,7 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
                         {folder.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-1 py-1.5 px-2 rounded cursor-pointer transition-all duration-150 group relative ${
+                                className={`flex items-center gap-1 py-0.5 px-2 rounded cursor-pointer transition-all duration-150 group relative ${
                                     safeIsFileSelected(file.fullPath) 
                                         ? 'bg-blue-50 border border-blue-200' 
                                         : 'hover:bg-slate-50 border border-transparent'
@@ -263,12 +263,12 @@ const FilePathTree = ({ filePaths = [], selectedDocs = [], onToggleDocSelection,
             
             <div className="max-h-96 overflow-y-auto p-2">
                 {Object.keys(fileTree.children).length > 0 || fileTree.files.length > 0 ? (
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                         {Object.values(fileTree.children).map(folder => renderFolder(folder))}
                         {fileTree.files.map(file => (
                             <div 
                                 key={file.fullPath}
-                                className={`flex items-center gap-1 py-1.5 px-2 rounded cursor-pointer transition-all duration-150 ${
+                                className={`flex items-center gap-1 py-0.5 px-2 rounded cursor-pointer transition-all duration-150 ${
                                     safeIsFileSelected(file.fullPath) 
                                         ? 'bg-blue-50 border border-blue-200' 
                                         : 'hover:bg-slate-50 border border-transparent'
